@@ -1,0 +1,18 @@
+
+
+.myExtendTop{padding:80rpx 4% 120rpx 4% ;}
+.myExtendTop .money{font-size: 66rpx; line-height:70rpx;}
+.myExtendTop .txBtn{width: 160rpx;line-height: 60rpx;border-radius: 40rpx;text-align: center;margin-top: 30rpx;}
+.ewmBtn{padding:10rpx 20rpx;background: #fff;border-radius: 40rpx 0 0 40rpx; color: #222;position: absolute;top: 40rpx;right: 0;}
+.ewmBtn .icon{width: 30rpx;height: 30rpx;margin-right: 10rpx;}
+.userBox2{margin: -50rpx 4% 10rpx 4% ;position: relative; z-index: 1; box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.1);padding: 30rpx 4%;background: #fff;border-radius: 10rpx;}
+.userBox2 .child{width: 33.3%;}
+
+.myRowBetween .ll .photo{width: 80rpx;height: 80rpx;border-radius: 50%;overflow: hidden;}
+.myRowBetween .ll .photo image{width: 100%;height: 100%;display: block;}
+.myRowBetweenL70 .item .ll{width: 70%;}
+.myRowBetweenL70 .item .rr{width: 30%;}
+
+.ewmAlert{position: fixed;top: 40%;left: 50%;transform: translateX(-50%);z-index: 45;}
+.ewmAlert .ewm{width: 360rpx;height: 360rpx;display: block;}
+

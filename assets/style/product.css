@@ -1,0 +1,13 @@
+
+/* 搜索框 */
+.seachBox{border-radius: 30rpx;background: #f5f5f5;height: 60rpx;}
+.seachBox .icon{width: 26rpx;height: 26rpx;margin-right: 10rpx;}	
+
+
+/* 产品列表 */
+.productList{flex-wrap: wrap;align-items: flex-start;}
+.productList .item{width: 330rpx;margin-bottom: 30rpx;background: #fff;overflow: hidden;}
+.productList .item .pic{width: 100%;height: 300rpx;}
+.productList .item .pic image{width: 100%;height:100%; display: block;}
+.productList .item .infor{padding: 20rpx;}
+.productList .item .tit{padding-bottom: 10rpx;}

@@ -1,0 +1,6 @@
+
+/* VIP价格 */
+.VipPrice{margin-left: 20rpx;}
+.VipPrice .mny{height: 36rpx;line-height: 36rpx;background: #C09E63;color: #fff;position: relative;margin-left: 24rpx;font-size: 10rpx;text-align: center;padding:0 12rpx 0 4rpx;border-radius: 0 6rpx 6rpx 0;}
+.VipPrice .mny::before{content: '';width:0;height:0;border: 18rpx solid transparent;border-right-color: #C09E63;position:absolute;top:0;left: -36rpx;}
+

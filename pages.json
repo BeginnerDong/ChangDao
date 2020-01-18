@@ -1,0 +1,242 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",//设置页面标题文字
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/seach/seach",
+			"style": {
+				"navigationBarTitleText": "搜索",//设置页面标题文字
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/seachProduct/seachProduct",
+			"style": {
+				"navigationBarTitleText": "搜索",//设置页面标题文字
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/liLiao/liLiao",
+			"style": {
+				"navigationBarTitleText": "理疗",//设置页面标题文字
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/productDetail/productDetail",
+			"style": {
+				"navigationBarTitleText": "商品详情",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/evaluate/evaluate",
+			"style": {
+				"navigationBarTitleText": "全部评价",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/orderConfim/orderConfim",
+			"style": {
+				"navigationBarTitleText": "确认订单",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/staffDetail/staffDetail",
+			"style": {
+				"navigationBarTitleText": "员工简介",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/product/product",
+			"style": {
+				"navigationBarTitleText": "产品",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/health/health",
+			"style": {
+				"navigationBarTitleText": "健康知识",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/healthDetail/healthDetail",
+			"style": {
+				"navigationBarTitleText": "详情",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/VipInfor/VipInfor",
+			"style": {
+				"navigationBarTitleText": "会员信息",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user-myInfor/user-myInfor",
+			"style": {
+				"navigationBarTitleText": "个人信息",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user_address/user_address",
+			"style": {
+				"navigationBarTitleText": "收货地址",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user_addressAdd/user_addressAdd",
+			"style": {
+				"navigationBarTitleText": "添加地址",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user-myBalance/user-myBalance",
+			"style": {
+				"navigationBarTitleText": "我的余额",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user-mySpread/user-mySpread",
+			"style": {
+				"navigationBarTitleText": "我的推广",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myCashOut/myCashOut",
+			"style": {
+				"navigationBarTitleText": "提现",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myBankMsg/myBankMsg",
+			"style": {
+				"navigationBarTitleText": "编辑银行卡",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user-orderInfor/user-orderInfor",
+			"style": {
+				"navigationBarTitleText": "订单信息",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/user-orderPingJia/user-orderPingJia",
+			"style": {
+				"navigationBarTitleText": "评价",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-login/myTeam-login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam/myTeam",
+			"style": {
+				"navigationBarTitleText": "张月",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-changePswd/myTeam-changePswd",
+			"style": {
+				"navigationBarTitleText": "修改密码",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-service/myTeam-service",
+			"style": {
+				"navigationBarTitleText": "服务",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-YongJin/myTeam-YongJin",
+			"style": {
+				"navigationBarTitleText": "我的佣金",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-mySpread/myTeam-mySpread",
+			"style": {
+				"navigationBarTitleText": "我的推广",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-scan/myTeam-scan",
+			"style": {
+				"navigationBarTitleText": "扫描结果",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/scanResult/scanResult",
+			"style": {
+				"navigationBarTitleText": "扫描结果",
+				"onReachBottomDistance":100
+			}
+		}
+    ],
+	"globalStyle": {
+		//"navigationStyle":"custom",
+		"navigationBarTextStyle": "white",//导航栏文字蓝色
+		"navigationBarTitleText": "中医理疗",
+		"navigationBarBackgroundColor": "#c09e63"
+	},
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [{
+			"name": "", //模式名称
+			"path": "", //启动页面，必选
+			"query": "" //启动参数，在页面的onLoad函数里面得到
+		}]
+	}
+}
