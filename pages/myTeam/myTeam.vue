@@ -14,41 +14,40 @@
 		<view class="myRowBetween fs13 mglr4">
 			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-changePswd/myTeam-changePswd'}})" >
 				<view class="ll flex">
-					<image class="icon" src="../../static/images/about-icon.png" mode=""></image>
+					<image class="icon" src="../../static/images/team-icon1.png" mode=""></image>
 					<view class="">修改密码</view>
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-service/myTeam-service'}})" >
 				<view class="ll flex">
-					<image class="icon" src="../../static/images/about-icon1.png" mode=""></image>
+					<image class="icon" src="../../static/images/team-icon2.png" mode=""></image>
 					<view class="">服务</view>
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-YongJin/myTeam-YongJin'}})" >
 				<view class="ll flex">
-					<image class="icon" src="../../static/images/about-icon2.png" mode=""></image>
+					<image class="icon" src="../../static/images/team-icon3.png" mode=""></image>
 					<view class="">我的佣金</view>
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-mySpread/myTeam-mySpread'}})" >
 				<view class="ll flex">
-					<image class="icon" src="../../static/images/about-icon3.png" mode=""></image>
+					<image class="icon" src="../../static/images/team-icon4.png" mode=""></image>
 					<view class="">我的推广</view>
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan'}})" >
 				<view class="ll flex">
-					<image class="icon" src="../../static/images/about-icon4.png" mode=""></image>
+					<image class="icon" src="../../static/images/team-icon5.png" mode=""></image>
 					<view class="">扫一扫</view>
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 		</view>
-			
 		
 	</view>
 </template>
