@@ -43,7 +43,7 @@
 		</view>
 		
 		<view class="mglr4 flexRowBetween productList pdtb15">
-			<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/productDetail/productDetail'}})">
+			<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail'}})">
 				<view class="pic"><image src="../../static/images/home-img.png" mode=""></image></view>
 				<view class="infor">
 					<view class="tit avoidOverflow">王氏按摩服务</view>

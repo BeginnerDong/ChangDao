@@ -60,10 +60,10 @@
 		<view class="mglr4 pdtb15">
 			<view class="flexRowBetween pdb10">
 				<view class="ftw fs15">全部商品</view>
-				<view class="fs12 color9 flexEnd" @click="Router.redirectTo({route:{path:'/pages/product/product'}})">全部<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
+				<view class="fs12 color9 flexEnd" @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})">全部<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="flexRowBetween productList">
-				<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail'}})">
+				<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/productDetail/productDetail'}})">
 					<view class="pic"><image src="../../static/images/home-img.png" mode=""></image></view>
 					<view class="infor">
 						<view class="tit avoidOverflow">王氏按摩服务</view>
@@ -81,7 +81,7 @@
 		</view>
 		
 		<view class="xqbotomBar submitbtn"style="padding: 40rpx 4%;">
-				<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages/product-orderConfim/product-orderConfim'}})">去结算</button>
+				<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})" >去结算</button>
 		</view>
 		
 	</view>
