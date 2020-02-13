@@ -2,11 +2,12 @@
 	<view>
 		
 		<view class="mglr4 healthList">
-			<view class="item flexRowBetween radius10" v-for="(item,index) in healthData" :key="index" @click="Router.navigateTo({route:{path:'/pages/healthDetail/healthDetail'}})">
-				<view class="ll"><image src="../../static/images/health-img.png" mode=""></image></view>
+			<view class="item flexRowBetween radius10" v-for="(item,index) in mainData" :data-id="item.id"
+			:key="index" @click="Router.navigateTo({route:{path:'/pages/healthDetail/healthDetail?id='+$event.currentTarget.dataset.id}})">
+				<view class="ll"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 				<view class="rr">
-					<view class="tit avoidOverflow">王氏按摩服务健康标题王氏按摩服务健康标题</view>
-					<view class="text fs12 color6 avoidOverflow2">内容内容内容内容内容内容内容内容内容内容内容内容内容内容</view>
+					<view class="tit avoidOverflow">{{item.title}}</view>
+					<view class="text fs12 color6 avoidOverflow2">{{item.description}}</view>
 					
 				</view>
 			</view>
@@ -25,21 +26,65 @@
 				showView: false,
 				wx_info:{},
 				is_show:false,
-				healthData:[{},{},{},{}]
+				healthData:[{},{},{},{}],
+				mainData:[],
+				searchItem:{
+					thirdapp_id:2
+				}
 			}
 		},
+		
 		onLoad() {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			console.log(2323)
+			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
+		onReachBottom() {
+			console.log('onReachBottom')
+			const self = this;
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				self.getMainData()
+			};
+		},
+		
 		methods: {
-			getMainData() {
+			getMainData(isNew) {
 				const self = this;
-				console.log('852369')
+				console.log(2323)
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 5
+					}
+				};
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = self.$Utils.cloneForm(self.searchItem);
+				postData.getBefore = {
+					article:{
+						tableName:'Label',
+						middleKey:'menu_id',
+						key:'id',
+						searchItem:{
+							title: ['in', ['健康知识']],
+						},
+						condition:'in'
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData,res.info.data)
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.articleGet(postData, callback);
+			},
 		}
 	};
 </script>

@@ -9,19 +9,22 @@
 		</view>
 		<view class="pdtb15 whiteBj">
 			<scroll-view id="tab-bar" class="uni-swiper-tab" scroll-x :scroll-left="scrollLeft">
-				<view v-for="(tab,index) in tabBars" :key="index" class="swiper-tab-list" :class="tabIndex==index? 'on' : ''" @click="tapTab(index)">{{tab}}</view>
+				<view v-for="(item,index) in typeData" :key="index" class="swiper-tab-list" :class="currId==item.id? 'on' : ''"
+				 @click="changeCurr(item.id)" >{{item.title}}</view>
 			</scroll-view>
 		</view>
+		
 		<view class="mglr4 flexRowBetween productList mgt15">
-			<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail'}})">
-				<view class="pic"><image src="../../static/images/home-img.png" mode=""></image></view>
+			<view class="item radius10" v-for="(item,index) in mainData" :data-id="item.id"
+			:key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail?id='+$event.currentTarget.dataset.id}})">
+				<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 				<view class="infor">
-					<view class="tit avoidOverflow">王氏按摩服务</view>
+					<view class="tit avoidOverflow">{{item.title}}</view>
 					<view class="flex">
-						<view class="price fs16 ftw">56</view>
+						<view class="price fs16 ftw">{{item.price}}</view>
 						<view class="flex VipPrice fs10">
 							<view>会员价</view>
-							<view class="mny">48</view>
+							<view class="mny">{{item.member_price}}</view>
 						</view>
 					</view>
 					
@@ -67,31 +70,97 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				wx_info:{},
-				is_show:false,
-				tabIndex: 0,
-				tabBars: ['理疗','中药','按摩','理疗','中药','按摩','理疗','中药','按摩'],
-				productData:[{},{},{},{},{},{}]
+				
+				typeData:[],
+				idArray:[],
+				mainData:[],
+				currId:-1,
+				order:{
+					listorder:'desc'
+				}
 			}
 		},
-		onLoad() {
+		
+		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getTypeData'], self);
 		},
+		
 		methods: {
-			tapTab(index) { 
-				//点击tab-bar
+			
+			changeCurr(id){
 				const self = this;
-				self.tabIndex = index
+				if(self.currId!=id){
+					self.currId = id;
+					self.getMainData(true)
+				}
 			},
-			getMainData() {
+			
+			getTypeData() {
 				const self = this;
-				console.log('852369')
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.searchItem = {
+					thirdapp_id: 2,
+				};
+				postData.getBefore = {
+					caseData: {
+						tableName: 'Label',
+						searchItem: {
+							title: ['in', ['理疗']],
+						},
+						middleKey: 'parentid',
+						key: 'id',
+						condition: 'in',
+					},
+				};
+				postData.order = {
+					listorder:'desc'
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.typeData.push.apply(self.typeData, res.info.data);
+						self.currId = self.typeData[0].id
+					}
+					self.getMainData()
+					console.log('self.typeData', self.typeData)
+					
+				};
+				self.$apis.labelGet(postData, callback);
+			},
+			
+			
+			getMainData(isNew) {
+				const self = this;
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 10
+					}
+				};
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					thirdapp_id: 2,
+					category_id:self.currId,
+					
+					type:1
+				};
+				if (JSON.stringify(self.order) != '{}') {
+					postData.order = self.$Utils.cloneForm(self.order);
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					console.log('self.mainData', self.mainData)
+					self.$Utils.finishFunc('getTypeData');
+				};
+				self.$apis.productGet(postData, callback);
+			},
 		}
 	};
 </script>

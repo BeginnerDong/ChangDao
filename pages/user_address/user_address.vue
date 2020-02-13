@@ -1,16 +1,16 @@
 <template>
 	<view>
 			<view class="myaddress-lis" v-for="(item,index) in myaddressDate" :key="index">
-				<view class="name">张三<view class="numb">15632564562</view></view>
-				<view class="adrs">陕西省西安市高新区大都荟</view>
+				<view class="name">{{item.name}}<view class="numb">{{item.phone}}</view></view>
+				<view class="adrs">{{item.city+item.detail}}</view>
 				<view class="seltBox">
-					<view class="L"  @click="seltCurr(index)">
-						<image class="icon" :src="curr == index?'../../static/images/address-icon2.png':'../../static/images/address-icon3.png'"  mode=""></image>
+					<view class="L"  :data-id="item.id" @click="updateAddress($event.currentTarget.dataset.id)">
+						<image class="icon" :src="item.isdefault==1?'../../static/images/address-icon2.png':'../../static/images/address-icon3.png'"  mode=""></image>
 						默认地址
 					</view>
 					<view class="R fs12 color9 flexEnd">
-						<view class="child flexEnd mgr20" @click="Router.navigateTo({route:{path:'/pages/user_addressAdd/user_addressAdd'}})"><image src="../../static/images/address-icon.png" mode=""></image>编辑</view>
-						<view class="child flexEnd" @click="deltAlert"><image src="../../static/images/address-icon1.png" mode=""></image>删除</view>
+						<view class="child flexEnd mgr20" :data-id="item.id" @click="Router.navigateTo({route:{path:'/pages/user_addressAdd/user_addressAdd?id='+$event.currentTarget.dataset.id}})"><image src="../../static/images/address-icon.png" mode=""></image>编辑</view>
+						<view class="child flexEnd" :data-id="item.id" @click="deleteAddress($event.currentTarget.dataset.id)"><image src="../../static/images/address-icon1.png" mode=""></image>删除</view>
 					</view>
 				</view>
 			</view>
@@ -35,39 +35,114 @@
 
 <script>
 	export default {
+
 		data() {
 			return {
+				mainData: [],
 				Router:this.$Router,
-				showView: false,
-				is_show:false,
-				wx_info: {},
-				curr:0,
-				myaddressDate:[{},{}]
+				choosedIndex: -1
 			}
 		},
 
-		onLoad(options) {
-			uni.setStorageSync('canClick', true);
+		onShow(options) {
+			const self = this;
+			self.mainData = [];
+			var res = self.$Token.getProjectToken(function() {
+				self.$Utils.loadAll(['getMainData'], self)
+			});
+			if (res) {
+				self.$Utils.loadAll(['getMainData'], self)
+			};
 		},
 
-		onShow() {
+		onReachBottom() {
+			console.log('onReachBottom')
 			const self = this;
-			document.title = ''
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				self.getMainData()
+			};
 		},
 
 		methods: {
-			seltCurr(index){
+
+			choose(index) {
 				const self = this;
-				self.curr = index
+				self.choosedIndex = index;
+				uni.setStorageSync('choosedAddressData', self.mainData[index]);
+				console.log('choosedIndex', self.choosedIndex);
 			},
-			deltAlert(){
-				const self = this;
-				self.is_show=!self.is_show;
-			},
+
 			getMainData() {
 				const self = this;
-				self.$apis.userGet(postData, callback);
-			}
+
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+				postData.tokenFuncName = 'getProjectToken';
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					} else {
+						self.$Utils.showToast('没有更多了', 'none');
+					};
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.addressGet(postData, callback);
+			},
+
+
+
+
+
+			deleteAddress(id) {
+				const self = this;
+				uni.showModal({
+					title: '提示',
+					content: '确认是否删除这个地址',
+					success: function(res) {
+						if (res.confirm) {
+							const postData = {};
+							postData.searchItem = {};
+							postData.searchItem.id = id;
+							postData.tokenFuncName = 'getProjectToken';
+							const callback = (res) => {
+								if (res) {
+									self.mainData = [];
+									self.getMainData();
+								}
+							};
+							self.$apis.addressDelete(postData, callback)
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+				});
+			},
+
+
+			updateAddress(id) {
+				const self = this;
+				const postData = {};
+
+				postData.tokenFuncName = 'getProjectToken';
+
+				postData.searchItem = {};
+				postData.searchItem.id = id;
+				postData.data = {
+					isdefault: 1
+				}
+				const callback = (res) => {
+					if (res) {
+						self.mainData = [];
+						self.getMainData();
+					}
+				};
+				self.$apis.addressUpdate(postData, callback);
+			},
+
+
+
+
 		}
 	}
 </script>

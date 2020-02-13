@@ -3,9 +3,13 @@
 		
 		<view class="userHead pdlr4">
 			<view class="infor flex">
-				<image class="photo" src="../../static/images/about-img.png" mode=""></image>
+				<view class="photo"
+				style="width: 120rpx;height: 120rpx;border-radius: 50%;overflow: hidden;">
+					<open-data type="userAvatarUrl"></open-data>
+				</view>
+				
 				<view style="width: 70%;">
-					<view class="fs14 pdb5">哆啦A梦</view>
+					<view class="fs14 pdb5"><open-data type="userNickName"></open-data></view>
 				</view>
 			</view>
 		</view>

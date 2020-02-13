@@ -2,15 +2,16 @@
 	<view>
 		
 		<view class="mglr4 flexRowBetween productList mgt15">
-			<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/productDetail/productDetail'}})">
-				<view class="pic"><image src="../../static/images/product-img.png" mode=""></image></view>
+			<view class="item radius10" v-for="(item,index) in mainData" :data-id="item.id"
+			:key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail?id='+$event.currentTarget.dataset.id}})">
+				<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 				<view class="infor">
-					<view class="tit avoidOverflow">王氏按摩服务</view>
+					<view class="tit avoidOverflow">{{item.title}}</view>
 					<view class="flex">
-						<view class="price fs16 ftw">56</view>
+						<view class="price fs16 ftw">{{item.price}}</view>
 						<view class="flex VipPrice fs10">
 							<view>会员价</view>
-							<view class="mny">48</view>
+							<view class="mny">{{item.member_price}}</view>
 						</view>
 					</view>
 					
@@ -56,24 +57,50 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				wx_info:{},
-				is_show:false,
-				productData:[{},{},{},{},{},{}]
+				mainData:[],
+				order:{
+					listorder:'desc'
+				}
 			}
 		},
-		onLoad() {
+		
+		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
 		methods: {
-			getMainData() {
+			
+			getMainData(isNew) {
 				const self = this;
-				console.log('852369')
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 10
+					}
+				};
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					thirdapp_id: 2,
+					type:2
+				};
+				if (JSON.stringify(self.order) != '{}') {
+					postData.order = self.$Utils.cloneForm(self.order);
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					console.log('self.mainData', self.mainData)
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.productGet(postData, callback);
+			},
 		}
 	};
 </script>

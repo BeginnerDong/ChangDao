@@ -2,16 +2,16 @@
 	<view>
 		
 		<view class="detailxqBan">
-			<image src="../../static/images/details-img.png" mode=""></image>
+			<image :src="mainData.bannerImg&&mainData.bannerImg[0]?mainData.bannerImg[0].url:''" mode=""></image>
 		</view>
 		<view class="mglr4 pdtb15 fs14">
-			<view class="tit mgb10">推拿按摩手法、推拿按摩时要注意这些事情</view>
+			<view class="tit mgb10">{{mainData.title}}</view>
 			<view class="flexRowBetween">
 				<view class="flex">
-					<view class="price fs16 ftw">889</view>
+					<view class="price fs16 ftw">{{mainData.price}}</view>
 					<view class="flex VipPrice fs10">
 						<view>会员价</view>
-						<view class="mny">48</view>
+						<view class="mny">{{mainData.member_price}}</view>
 					</view>
 				</view>
 				<view class="fs12 color6 flexEnd"><image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享</view>
@@ -20,7 +20,7 @@
 		</view>
 		<view class="f5H5"></view>
 		<view class="mglr4 pdtb15 flexRowBetween">
-			<view class="fs13">电话：15623562356</view>
+			<view class="fs13">电话：{{mainData.phone}}</view>
 			<view class="flexEnd"><image style="width: 34rpx;height: 34rpx;" src="../../static/images/details-icon1.png" mode=""></image></view>
 		</view>
 		<view class="f5H5"></view>
@@ -32,9 +32,9 @@
 			<view class="">
 				<view class="xqInfor pdtb15 fs13" v-show="curr==1">
 					<view class="cont">
-						<view>管理客服电话还房贷两个号和个梵蒂冈悲愤交加鹤骨鸡肤供货方点击可供货方都拉黑干活的放假开个会过分的话看</view>
-						<view>花港饭店两三个号换个卡富家大室联合国利干活附近的开个会发和公交卡方大化工干活附近的看和</view>
-						<view><image class="w" src="../../static/images/details-img1.png" mode="widthFix"></image></view>
+						<view class="content ql-editor" style="padding:0;"
+						v-html="mainData.content">
+						</view>
 					</view>
 				</view>
 				<view class="pingjia" v-show="curr==2">
@@ -60,18 +60,20 @@
 		<view class="mglr4 pdtb15">
 			<view class="flexRowBetween pdb10">
 				<view class="ftw fs15">全部商品</view>
-				<view class="fs12 color9 flexEnd" @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})">全部<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
+				<view class="fs12 color9 flexEnd" 
+				@click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})">全部<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
 			<view class="flexRowBetween productList">
-				<view class="item radius10" v-for="(item,index) in productData" :key="index" @click="Router.navigateTo({route:{path:'/pages/productDetail/productDetail'}})">
-					<view class="pic"><image src="../../static/images/home-img.png" mode=""></image></view>
+				<view class="item radius10" v-for="(item,index) in productData" :data-id="item.id"
+				:key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail?id='+$event.currentTarget.dataset.id}})">
+					<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 					<view class="infor">
-						<view class="tit avoidOverflow">王氏按摩服务</view>
+						<view class="tit avoidOverflow">{{item.title}}</view>
 						<view class="flex">
-							<view class="price fs16 ftw">56</view>
+							<view class="price fs16 ftw">{{item.price}}</view>
 							<view class="flex VipPrice fs10">
 								<view>会员价</view>
-								<view class="mny">48</view>
+								<view class="mny">{{item.member_price}}</view>
 							</view>
 						</view>
 						
@@ -80,8 +82,9 @@
 			</view>
 		</view>
 		
-		<view class="xqbotomBar submitbtn"style="padding: 40rpx 4%;">
-				<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})" >去结算</button>
+		<view class="xqbotomBar submitbtn" style="padding: 40rpx 4%;">
+				<button class="btn" type="button" 
+				@click="Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})" >去结算</button>
 		</view>
 		
 	</view>
@@ -97,14 +100,17 @@
 				is_show:false,
 				curr:1,
 				pingjiaData:[{},{}],
-				productData:[{},{},{},{}]
+				productData:[],
+				mainData:{}
 			}
 		},
 		
-		onLoad() {
+		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.id = options.id;
+			self.$Utils.loadAll(['getMainData','getProductData'], self);
 		},
+		
 		methods: {
 			change(curr) {
 				const self = this;
@@ -112,13 +118,50 @@
 					self.curr = curr
 				}
 			},
+			
 			getMainData() {
 				const self = this;
-				console.log('852369')
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.searchItem = {
+					thirdapp_id: 2,
+					id: self.id
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData = res.info.data[0];
+						const regex = new RegExp('<img', 'gi');
+						self.mainData.content = self.mainData.content.replace(regex, `<img style="max-width: 100%;"`);
+					}
+					console.log('self.mainData', self.mainData)
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.productGet(postData, callback);
+			},
+			
+			getProductData() {
+				const self = this;
+				const postData = {};
+				postData.paginate = {
+					count: 0,
+					currentPage: 1,
+					is_page: true,
+					pagesize: 4
+				};
+				postData.searchItem = {
+					thirdapp_id:2,
+					id:['not in',self.id]
+				};
+				postData.order = {
+					listorder:'desc'
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.productData.push.apply(self.productData,res.info.data)
+					}
+					self.$Utils.finishFunc('getProductData');
+				};
+				self.$apis.productGet(postData, callback);
+			},
 		}
 	};
 </script>
