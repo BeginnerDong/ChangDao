@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="myExtendTop flexColumn center pubBj white pr">
-			<view class="money">1520</view>
+			<view class="money">{{userInfoData.balance}}</view>
 			<view class="fs13 pdt10">余额(元)</view>
 			<view class="txBtn pubColor whiteBj"  @click="Router.navigateTo({route:{path:'/pages/myCashOut/myCashOut'}})">提现</view>
 			<view class="ewmBtn flexEnd fs12" @click="ewmShow">
@@ -16,21 +16,21 @@
 		
 		<view class="">
 			<view class="myRowBetween mglr4" v-show="num==1">
-				<view class="item flexRowBetween" v-for="(item,index) in spendData" :key="index">
+				<view class="item flexRowBetween" v-for="(item,index) in mainData" :key="index">
 					<view class="ll">
-						<view class="fs13">推广</view>
-						<view class="fs12 color6">2020.01.17</view>
+						<view class="fs13">{{item.trade_info}}</view>
+						<view class="fs12 color6">{{item.create_time}}</view>
 					</view>
-					<view class="rr red">+56</view>
+					<view class="rr red">{{item.count}}</view>
 				</view>
 			</view>
 			<view class="myRowBetween myRowBetweenL70  mglr4" v-show="num==2">
-				<view class="item flexRowBetween" v-for="(item,index) in spendData" :key="index">
-					<view class="ll flex">
-						<view class="photo"><image src="../../static/images/promote-img.png" mode=""></image></view>
-						<view class="fs13">签到</view>
+				<view class="item flexRowBetween" v-for="(item,index) in mainData" :key="index">
+					<view class="ll flex" style="width:50%">
+						<view class="photo"><image :src="item.user&&item.user.headImgUrl?item.user.headImgUrl:''" mode=""></image></view>
+						<view class="fs13">{{item.user&&item.user.nickname?item.user.nickname:''}}</view>
 					</view>
-					<view class="rr color9">2020.01.17</view>
+					<view class="rr color9"  style="width:50%">{{item.create_time}}</view>
 				</view>
 			</view>
 		</view>
@@ -56,25 +56,139 @@
 				num:1,
 				spendData:[{},{},{}],
 				is_show:false,
-				is_ewmShow:false
+				is_ewmShow:false,
+				mainData:[],
+				userInfoData:{},
+				searchItem:{
+					type:2,
+					thirdapp_id:2,
+					
+				},
 			}
 		},
+		
 		onLoad() {
 			const self = this;
-			//self.$Utils.loadAll(['getMainData'], self);
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getMainData','getUserInfoData'], self);
 		},
+		
+		onReachBottom() {
+			console.log('onReachBottom')
+			const self = this;
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				if(self.num==1){
+					self.getMainData()
+				}else if(self.num==2){
+					self.getDistriData()
+				}
+			};
+		},
+		
 		methods: {
+			
 			change(num){
 				const self = this;
 				if(num!= self.num){
 					self.num = num
+					if(self.num==1){
+						self.getMainData(true)
+					}else if(self.num==2){
+						self.getDistriData(true)
+					}
 				}
 			},
+			
 			ewmShow(){
 				const self = this;
 				self.is_show = !self.is_show;
 				self.is_ewmShow = !self.is_ewmShow
-			}
+			},
+			
+			getUserInfoData() {
+				const self = this;
+				console.log('852369')
+				const postData = {
+					searchItem:{}
+				};
+				postData.tokenFuncName = 'getProjectToken'
+				postData.searchItem.user_no = uni.getStorageSync('user_info').user_no		
+				
+				const callback = (res) => {
+					if (res.solely_code == 100000 && res.info.data[0]) {
+						self.userInfoData = res.info.data[0];
+					} else {
+						self.$Utils.showToast(res.msg, 'none')
+					};
+					self.$Utils.finishFunc('getUserInfoData');
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
+			
+			getMainData(isNew) {
+				const self = this;
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						pagesize: 10,
+						is_page: true,
+					};
+				};
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = self.$Utils.cloneForm(self.searchItem);
+				postData.tokenFuncName = 'getProjectToken';
+				
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.flowLogGet(postData, callback);
+			},
+			
+			getDistriData(isNew) {
+				const self = this;
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						pagesize: 10,
+						is_page: true,
+					};
+				};
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					type:1,
+					parent_no:uni.getStorageSync('user_info').user_no
+				};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.getAfter = {
+					user:{
+						tableName:'User',
+						middleKey:'child_no',
+						key:'user_no',
+						condition:'=',
+						searchItem:{
+							status:1
+						},
+						info:['headImgUrl','nickname']
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.distriGet(postData, callback);
+			},
 			
 		}
 	};

@@ -84,7 +84,7 @@
 		
 		<view class="xqbotomBar submitbtn" style="padding: 40rpx 4%;">
 				<button class="btn" type="button" 
-				@click="Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})" >去结算</button>
+				@click="Utils.stopMultiClick(goBuy)">去结算</button>
 		</view>
 		
 	</view>
@@ -95,6 +95,7 @@
 		data() {
 			return {
 				Router:this.$Router,
+				Utils:this.$Utils,
 				showView: false,
 				wx_info:{},
 				is_show:false,
@@ -111,7 +112,31 @@
 			self.$Utils.loadAll(['getMainData','getProductData'], self);
 		},
 		
+		onShow() {
+			const self = this;
+			self.orderList = [];
+			uni.removeStorageSync('payPro')
+		},
+		
+		
 		methods: {
+			
+			goBuy(){
+				const self = this;
+				uni.setStorageSync('canClick',false);
+				self.orderList.push(
+					{product_id:self.mainData.id,count:1,
+					type:1,product:self.mainData},
+				);
+				uni.setStorageSync('payPro', self.orderList);
+				if(self.mainData.type==1){
+					self.Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})
+				}else if(self.mainData.type==2){
+					self.Router.navigateTo({route:{path:'/pages/product-orderConfim/product-orderConfim'}})
+				}
+				uni.setStorageSync('canClick',true);
+			},
+			
 			change(curr) {
 				const self = this;
 				if(curr!=self.curr){

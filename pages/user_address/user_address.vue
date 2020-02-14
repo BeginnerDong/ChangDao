@@ -1,6 +1,6 @@
 <template>
 	<view>
-			<view class="myaddress-lis" v-for="(item,index) in myaddressDate" :key="index">
+			<view class="myaddress-lis" v-for="(item,index) in mainData" :key="index">
 				<view class="name">{{item.name}}<view class="numb">{{item.phone}}</view></view>
 				<view class="adrs">{{item.city+item.detail}}</view>
 				<view class="seltBox">

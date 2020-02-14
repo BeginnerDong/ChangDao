@@ -3,9 +3,9 @@
 		
 		<view class="userHead pdlr4">
 			<view class="infor flex">
-				<image class="photo" src="../../static/images/about-img.png" mode=""></image>
+				<image class="photo" :src="mainData.mainImg&&mainData.mainImg[0]?mainData.mainImg[0].url:''" mode=""></image>
 				<view style="width: 70%;">
-					<view class="fs14 pdb5">张月</view>
+					<view class="fs14 pdb5">{{mainData.name}}</view>
 				</view>
 			</view>
 		</view>
@@ -57,17 +57,37 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				score:'',
-				wx_info:{}
+				mainData:{}
 			}
 		},
 		onLoad() {
 			const self = this;
-			//self.$Utils.loadAll(['getMainData'], self);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
 		methods: {
-
+			
+			getMainData() {
+				const self = this;
+				console.log('852369')
+				const postData = {
+					searchItem:{}
+				};
+				postData.tokenFuncName = 'getStaffToken'
+				postData.searchItem.user_no = uni.getStorageSync('staffInfo').user_no		
+				const callback = (res) => {
+					if (res.solely_code == 100000 && res.info.data[0]) {
+						self.mainData = res.info.data[0];
+						uni.setNavigationBarTitle({
+						    title: self.mainData.name
+						});
+					} else {
+						self.$Utils.showToast(res.msg, 'none')
+					};
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
 
 		},
 	};

@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view v-if="showAll">
 		<view><image style="width: 100%;height: 346rpx;display: block;" src="../../static/images/the-login-img.png" mode="widthFix"></image></view>
 		
 		<view>
@@ -7,19 +7,19 @@
 				<view class="item flex">
 					<view class="ll">账号：</view>
 					<view class="rr">
-						<input type="text" value="" placeholder="请输入手机号" placeholder-class="placeholder" />
+						<input type="text" v-model="submitData.login_name" placeholder="请输入手机号" placeholder-class="placeholder" />
 					</view>
 				</view>
 				<view class="item flex">
 					<view class="ll">密码：</view>
 					<view class="rr">
-						<input type="password" value="" placeholder="请输入密码" placeholder-class="placeholder" />
+						<input type="password" v-model="submitData.password" placeholder="请输入密码" placeholder-class="placeholder" />
 					</view>
 				</view>
 			</view>
 			
 			<view class="submitbtn" style="margin-top: 200rpx;">
-				<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages/myTeam/myTeam'}})">登录</button>
+				<button class="btn" type="button" @click="submit">登录</button>
 			</view>
 		</view>
 		
@@ -31,25 +31,55 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				wx_info:{},
-				is_show:false
+				submitData:{
+					login_name:'',
+					password:''
+				},
+				showAll:false
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
-		},
-		methods: {
-			getMainData() {
-				const self = this;
-				console.log('852369')
-				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
+			if (uni.getStorageSync('staffToken')&&uni.getStorageSync('staffInfo').user_type==1) {
+				uni.redirectTo({
+					url: '/pages/myTeam/myTeam'
+				})
+			}else{
+				self.showAll = true
 			}
-		}
+		},
+		
+		methods: {
+			
+			submit() {
+				const self = this;
+			
+				const postData = {
+					login_name: self.submitData.login_name,
+					password:self.submitData.password
+				};
+				if (self.$Utils.checkComplete(self.submitData)) {
+					
+					const callback = (res) => {
+						if (res.solely_code == 100000) {
+							console.log(res);
+							uni.setStorageSync('staffToken', res.token);
+							uni.setStorageSync('staffInfo', res.info);
+							uni.redirectTo({
+								url: '/pages/myTeam/myTeam'
+							}) 
+						} else {
+							self.$Utils.showToast(res.msg,'none')
+						}
+					}
+					self.$apis.login(postData, callback);
+				} else {
+					self.$Utils.showToast('请补全登录信息', 'none')
+				};
+			},
+			
+		},
 	};
 </script>
 

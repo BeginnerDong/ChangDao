@@ -5,19 +5,19 @@
 			<view class="item">
 				<view class="tit">原始密码</view>
 				<view class="input">
-					<input type="text" value="" placeholder="" placeholder-class="placeholder">
+					<input type="text" value="" placeholder="请输入原始密码" placeholder-class="placeholder">
 				</view>
 			</view>
 			<view class="item">
 				<view class="tit">新密码</view>
 				<view class="input">
-					<input type="" value="" placeholder="" placeholder-class="placeholder">
+					<input type="password" value="" placeholder="请输入新密码" placeholder-class="placeholder">
 				</view>
 			</view>
 			<view class="item">
 				<view class="tit">再次输入新密码</view>
 				<view class="input">
-					<input type="text" value="" placeholder="" placeholder-class="placeholder">
+					<input type="password" value="" placeholder="请确认新密码" placeholder-class="placeholder">
 				</view>
 			</view>
 		</view>

@@ -63,7 +63,11 @@
             "minified" : true
         },
         "usingComponents" : false,
-        "permission" : {}
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "展示位置信息"
+            }
+        }
     },
     "h5" : {
         "title" : "中医理疗",
