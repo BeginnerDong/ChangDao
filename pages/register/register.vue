@@ -7,26 +7,29 @@
 				<view class="item flex">
 					<view class="ll">账号：</view>
 					<view class="rr">
-						<input type="text" value="" placeholder="请输入手机号" placeholder-class="placeholder" />
+						<input type="text" v-model="submitData.phone" placeholder="请输入手机号" placeholder-class="placeholder" />
 					</view>
 				</view>
-				<view class="item flex">
+				<!-- <view class="item flex">
 					<view class="ll">验证码：</view>
 					<view class="rr flexRowBetween">
 						<view style="width: 40%;"><input type="text" value="" placeholder="请输入验证码" placeholder-class="placeholder" /></view>
 						<view class="flexEnd pubColor">获取验证码</view>
 					</view>
-				</view>
+				</view> -->
 				<view class="item flex">
 					<view class="ll">密码：</view>
 					<view class="rr">
-						<input type="password" value="" placeholder="请输入密码" placeholder-class="placeholder" />
+						<input type="password" v-model="submitData.password" placeholder="请输入密码" placeholder-class="placeholder" />
 					</view>
 				</view>
 			</view>
 			
 			<view class="submitbtn" style="margin-top:110rpx;">
-				<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages/login/login'}})">注册</button>
+				<button class="btn" type="button"  open-type="getUserInfo" @getuserinfo="Utils.stopMultiClick(submit)">注册</button>
+			</view>
+			<view class="submitbtn" style="margin-top:20rpx;">
+				<button class="btn" type="button" @click="Router.reLaunch({route:{path:'/pages/index/index'}})">返回首页</button>
 			</view>
 		</view>
 		
@@ -38,9 +41,14 @@
 		data() {
 			return {
 				Router:this.$Router,
+				Utils:this.$Utils,
 				showView: false,
 				wx_info:{},
-				is_show:false
+				is_show:false,
+				submitData:{
+					phone:'',
+					password:''
+				}
 			}
 		},
 		
@@ -48,14 +56,71 @@
 			const self = this;
 			// self.$Utils.loadAll(['getMainData'], self);
 		},
+		
 		methods: {
-			getMainData() {
+			
+			submit() {
 				const self = this;
-				console.log('852369')
+				
+				uni.setStorageSync('canClick', false);
+				const pass = self.$Utils.checkComplete(self.submitData);
+				console.log('pass', pass);
+				console.log('self.submitData',self.submitData)
+				
+				if (pass) {	
+					const callback = (user, res) => {
+						console.log(res)
+						self.userInfoUpdate();
+					};
+					self.$Utils.getAuthSetting(callback);
+				
+				} else {
+					uni.setStorageSync('canClick', true);
+					self.$Utils.showToast('请补全信息', 'none')
+				};
+			},
+			
+			userInfoUpdate() {
+				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.searchItem = {
+					user_no:uni.getStorageSync('user_info').user_no
+				};
+				postData.data = {
+					phone:self.submitData.phone
+				};
+				if(uni.getStorageSync('parent_no')){
+					postData.saveAfter = [
+						{
+							tableName: 'Distribution',
+							FuncName: 'add',
+							data: {
+								thirdapp_id:2,
+								status:1,
+								parent_no:uni.getStorageSync('parent_no'),
+								child_no:uni.getStorageSync('user_info').user_no,
+								level:1
+							},
+						},
+					];
+				};
+				const callback = (data) => {				
+					if (data.solely_code == 100000) {					
+						self.$Utils.showToast('注册成功', 'none', 1000)
+						setTimeout(function() {
+							uni.navigateBack({
+								delta:1
+							})
+						}, 1000);
+						
+					} else {
+						uni.setStorageSync('canClick', true);
+						self.$Utils.showToast(data.msg, 'none', 1000)
+					}	
+				};
+				self.$apis.userInfoUpdate(postData, callback);
+			},
 		}
 	};
 </script>

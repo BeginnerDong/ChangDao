@@ -40,7 +40,7 @@
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
-			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan'}})" >
+			<view class="item flexRowBetween" @click="scanCode">
 				<view class="ll flex">
 					<image class="icon" src="../../static/images/team-icon5.png" mode=""></image>
 					<view class="">扫一扫</view>
@@ -66,6 +66,17 @@
 		},
 		
 		methods: {
+			
+			scanCode(){
+				const self = this;
+				uni.scanCode({
+				    success: function (res) {
+				        self.Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan?id='+res.result}})
+				        console.log('条码内容：' + res.result);
+				    }
+				});
+			},
+			
 			
 			getMainData() {
 				const self = this;

@@ -117,7 +117,7 @@
 		onLoad() {
 			const self = this;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getSliderData','getMainData'], self);
+			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData'], self);
 		},
 		
 		onReachBottom() {
@@ -130,6 +130,23 @@
 		},
 		
 		methods: {
+			
+			getUserInfoData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = {
+					user_no:uni.getStorageSync('user_info').user_no
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.userInfoData = res.info.data[0];
+					}
+					console.log('self.userInfoData', self.userInfoData)
+					self.$Utils.finishFunc('getUserInfoData');
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
 			
 			getSliderData() {
 				const self = this;

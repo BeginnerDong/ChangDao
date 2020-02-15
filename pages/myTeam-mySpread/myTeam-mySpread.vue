@@ -2,7 +2,7 @@
 	<view>
 		<view class="center pr" style="padding: 80rpx 4%;">
 			<view class="flexCenter fs12">
-				<view class="fs22">10</view>个
+				<view class="fs22">{{mainData.length}}</view>个
 			</view>
 			<view class="ewmBtn flexEnd fs12" @click="ewmShow" style="background: #C09E63; color: #fff;">
 				<image class="icon" src="../../static/images/promote-icon3.png" mode=""></image>
@@ -12,12 +12,12 @@
 		<view class="f5H5"></view>
 		
 		<view class="myRowBetween myRowBetweenL70  mglr4">
-			<view class="item flexRowBetween" v-for="(item,index) in spendData" :key="index">
-				<view class="ll flex">
-					<view class="photo"><image src="../../static/images/promote-img.png" mode=""></image></view>
-					<view class="fs13 ll-tit">圣诞节狂欢夜</view>
+			<view class="item flexRowBetween" v-for="(item,index) in mainData" :key="index">
+				<view class="ll flex" style="width: 50%;">
+					<view class="photo"><image :src="item.user&&item.user.headImgUrl?item.user.headImgUrl:''" mode=""></image></view>
+					<view class="fs13 ll-tit">{{item.user&&item.user.nickname?item.user.nickname:''}}</view>
 				</view>
-				<view class="rr color9">2020.01.17</view>
+				<view class="rr color9" style="width: 50%;">{{item.create_time}}</view>
 			</view>
 		</view>
 		
@@ -36,19 +36,70 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				score:'',
-				wx_info:{},
 				spendData:[{},{},{}],
 				is_show:false,
-				is_ewmShow:false
+				is_ewmShow:false,
+				mainData:[]
 			}
 		},
-		onLoad() {
+		
+		onLoad(options) {
 			const self = this;
-			//self.$Utils.loadAll(['getMainData'], self);
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
+		onReachBottom() {
+			console.log('onReachBottom')
+			const self = this;
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				self.getMainData()
+			};
+		},
+		
 		methods: {
+			
+			
+			getMainData(isNew) {
+				const self = this;
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						pagesize: 10,
+						is_page: true,
+					};
+				};
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					type:1,
+					parent_no:uni.getStorageSync('staffInfo').user_no
+				};
+				postData.tokenFuncName = 'getStaffToken';
+				postData.getAfter = {
+					user:{
+						tableName:'User',
+						middleKey:'child_no',
+						key:'user_no',
+						condition:'=',
+						searchItem:{
+							status:1
+						},
+						info:['headImgUrl','nickname']
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.distriGet(postData, callback);
+			},
+			
 			ewmShow(){
 				const self = this;
 				self.is_show = !self.is_show;

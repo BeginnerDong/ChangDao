@@ -48,6 +48,21 @@ export default {
 		};
 		http.HTTP(allParams);
 	},
+	
+	resetPassword(param, callback) {
+	
+		var allParams = {
+			url: 'Project/Solely/resetPassword',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
+	
+	
 
 	monthFlow(param, callback) {
 

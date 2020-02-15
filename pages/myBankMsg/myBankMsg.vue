@@ -43,16 +43,19 @@
 				submitData:{
 					card_name:'',
 					bank:'',
-					card_card:'',
+					card_no:'',
 					card_phone:'',
 					
 				},
-				
+				isStaff:false
 			}
 		},
 		
-		onShow(options) {
+		onLoad(options) {
 			const self = this;
+			if(options.type){
+				self.isStaff = true
+			};
 			console.log(23243)
 			self.$Utils.loadAll(['getMainData'], self);
 		},
@@ -117,18 +120,18 @@
 			userInfoUpdate() {
 				const self = this;
 				var newObject = self.$Utils.cloneForm(self.submitData);
-				delete newObject.smsCode;
-				const postData = {};
-				postData.tokenFuncName = 'getThirdToken';
-				postData.searchItem = {
-					user_no:uni.getStorageSync('thirdInfo').user_no
+				const postData = {
+					searchItem:{}
 				};
+				if(self.isStaff){
+					postData.tokenFuncName = 'getStaffToken';
+					postData.searchItem.user_no = uni.getStorageSync('staffToken').user_no
+				}else{
+					postData.tokenFuncName = 'getProjectToken';
+					postData.searchItem.user_no = uni.getStorageSync('user_info').user_no
+				}
 				postData.data = {};
 				postData.data = self.$Utils.cloneForm(newObject);
-				postData.smsAuth = {
-					phone:self.submitData.bank_phone,						
-					code:self.submitData.smsCode
-				};
 				const callback = (data) => {				
 					if (data.solely_code == 100000) {					
 						self.$Utils.showToast('修改成功', 'none', 1000)
@@ -147,18 +150,24 @@
 			
 			getMainData() {
 				const self = this;
-				const postData = {};
-				postData.tokenFuncName = 'getThirdToken';
-				postData.searchItem = {
-					user_no:uni.getStorageSync('thirdInfo').user_no
+				
+				const postData = {
+					searchItem:{}
 				};
+				if(self.isStaff){
+					postData.tokenFuncName = 'getStaffToken';
+					postData.searchItem.user_no = uni.getStorageSync('staffToken').user_no
+				}else{
+					postData.tokenFuncName = 'getProjectToken';
+					postData.searchItem.user_no = uni.getStorageSync('user_info').user_no
+				}
 				const callback = (res) => {
 					if (res.info.data.length > 0) {
 						self.mainData = res.info.data[0];
-						self.submitData.bank_name = res.info.data[0].bank_name;
-						self.submitData.bank_card = res.info.data[0].bank_card;
-						self.submitData.bank_phone = res.info.data[0].bank_phone;
+						self.submitData.card_name = res.info.data[0].card_name;
 						self.submitData.bank = res.info.data[0].bank;
+						self.submitData.card_no = res.info.data[0].card_no;
+						self.submitData.card_phone = res.info.data[0].card_phone;
 					}
 					console.log('self.mainData', self.mainData)
 					self.$Utils.finishFunc('getMainData');

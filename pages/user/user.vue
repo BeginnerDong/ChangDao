@@ -104,11 +104,37 @@
 		},
 		onLoad() {
 			const self = this;
-			//self.$Utils.loadAll(['getMainData'], self);
+			//self.$Utils.loadAll(['getUserInfoData'], self);
 		},
+		
+		onShow() {
+			const self = this;
+			self.getUserInfoData()
+		},
+		
 		methods: {
 
-
+			getUserInfoData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = {
+					user_no:uni.getStorageSync('user_info').user_no
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.userInfoData = res.info.data[0];
+						
+						if(self.userInfoData.phone==''){
+							self.Router.navigateTo({route:{path:'/pages/register/register'}})
+						}
+						
+					}
+					console.log('self.userInfoData', self.userInfoData)
+					
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
 		},
 	};
 </script>

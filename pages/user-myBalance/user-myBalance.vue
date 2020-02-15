@@ -51,7 +51,7 @@
 			self.$Utils.loadAll(['getMainData','getUserInfoData'], self);
 		},
 		
-		onReachBottom() {
+		 onReachBottom() {
 			console.log('onReachBottom')
 			const self = this;
 			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
@@ -83,8 +83,8 @@
 						condition: 'in',
 						compute:{
 						  count:[
-						    'count',
 						    'sum',
+						    'count',
 						    {
 						      status:1,behavior:4
 						    }

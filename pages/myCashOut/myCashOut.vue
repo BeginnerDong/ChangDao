@@ -9,14 +9,14 @@
 					{{userInfoData.bank}}
 					<view class="color6 num">({{userInfoData.card_no}})</view>
 				</view>
-				<view @click="Router.navigateTo({route:{path:'/pages/myBankMsg/myBankMsg'}})">
+				<view @click="goBank">
 					<image class="arrow arrowR" src="../../static/images/the-order-icon2.png" mode=""></image>
 				</view>
 			</view>
 			
 			<view class="flexRowBetween bankmsg addBtn" >
 				<view>到账银行卡</view>
-				<view class="flexCenter" @click="Router.navigateTo({route:{path:'/pages/myBankMsg/myBankMsg'}})">
+				<view class="flexCenter" @click="goBank">
 					<text class="color9 fs13">去添加</text>
 					<image class="arrow arrowR" src="../../static/images/the-order-icon2.png" mode=""></image>
 				</view>
@@ -53,12 +53,16 @@
 				userInfoData:{},
 				submitData:{
 					count:''
-				}
+				},
+				isStaff:false
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
+			if(options.type){
+				self.isStaff = true
+			}
 			//self.$Utils.loadAll(['getUserInfoData'], self);
 		},
 		
@@ -68,6 +72,15 @@
 		},
 		
 		methods: {
+			
+			goBank(){
+				const self = this;
+				if(self.isStaff){
+					self.Router.navigateTo({route:{path:'/pages/myBankMsg/myBankMsg?type=staff'}})
+				}else{
+					self.Router.navigateTo({route:{path:'/pages/myBankMsg/myBankMsg'}})
+				}
+			},
 			
 			allCount(){
 				const self = this;
@@ -105,7 +118,11 @@
 			flowLogAdd() {
 				const self = this;
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken'
+				if(self.isStaff){
+					postData.tokenFuncName = 'getStaffToken';
+				}else{
+					postData.tokenFuncName = 'getProjectToken';
+				}
 				postData.data = {
 					count:-self.submitData.count,
 					thirdapp_id:2,
@@ -139,8 +156,14 @@
 				const postData = {
 					searchItem:{}
 				};
-				postData.tokenFuncName = 'getProjectToken';
-				postData.searchItem.user_no = uni.getStorageSync('user_info').user_no
+				if(self.isStaff){
+					postData.tokenFuncName = 'getStaffToken';
+					postData.searchItem.user_no = uni.getStorageSync('staffToken').user_no
+				}else{
+					postData.tokenFuncName = 'getProjectToken';
+					postData.searchItem.user_no = uni.getStorageSync('user_info').user_no
+				}
+				
 				const callback = (res) => {
 					if (res.solely_code == 100000 && res.info.data[0]) {
 						self.userInfoData = res.info.data[0]

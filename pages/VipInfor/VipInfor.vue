@@ -7,11 +7,11 @@
 			<view class="adrs flexColumn">
 				<view class="item">
 					<image class="icon" src="../../static/images/members-icon.png" mode=""></image>
-					<view>陕西省西安市长安区韦曲街道</view>
+					<view>{{mainData.description}}</view>
 				</view>
 				<view class="item">
 					<image class="icon" src="../../static/images/members-icon1.png" mode=""></image>
-					<view>15623568956</view>
+					<view>{{mainData.url}}</view>
 				</view>
 			</view>
 		</view>
@@ -24,23 +24,29 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				wx_info:{},
-				is_show:false
+				mainData:{}
 			}
 		},
 		onLoad() {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
 		methods: {
+			
 			getMainData() {
 				const self = this;
-				console.log('852369')
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.searchItem = {
+					title:'商家信息',
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData = res.info.data[0]
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.labelGet(postData, callback);
+			},
 		}
 	};
 </script>

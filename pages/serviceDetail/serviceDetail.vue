@@ -14,12 +14,14 @@
 						<view class="mny">{{mainData.member_price}}</view>
 					</view>
 				</view>
-				<view class="fs12 color6 flexEnd"><image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享</view>
+				<button class="fs12 color6 flexEnd" open-type="share">
+					<image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享
+				</button>
 			</view>
 			
 		</view>
 		<view class="f5H5"></view>
-		<view class="mglr4 pdtb15 flexRowBetween">
+		<view class="mglr4 pdtb15 flexRowBetween" @click="phoneCall">
 			<view class="fs13">电话：{{mainData.phone}}</view>
 			<view class="flexEnd"><image style="width: 34rpx;height: 34rpx;" src="../../static/images/details-icon1.png" mode=""></image></view>
 		</view>
@@ -38,19 +40,23 @@
 					</view>
 				</view>
 				<view class="pingjia" v-show="curr==2">
-					<view class="item" v-for="(item,index) in pingjiaData" :key="index">
+					<view class="item" v-if="messageData.length>0" v-for="(item,index) in messageData" :key="index">
 						<view class="flexRowBetween pdb10">
 							<view class="flex">
 								<view class="photo mgr10">
-									<image src="../../static/images/details-img2.png" mode=""></image>
+									<image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image>
 								</view>
-								<view class="fs13">快乐的猫</view>
+								<view class="fs13">{{item.title}}</view>
 							</view>
-							<view class="flexEnd color6 fs12">2020.01.17</view>
+							<view class="flexEnd color6 fs12">{{item.create_time}}</view>
 						</view>
-						<view class="fs13">好的浓香型白酒用语是,酒体清亮透明,入口绵甜,落口爽净,回味悠长,值得信赖。</view>
+						<view class="fs13">{{item.description}}</view>
 					</view>
-					<view class="pdtb15 flexCenter">
+					<view class="item" v-if="messageData.length==0">
+						
+						<view class="fs13" style="text-align: center;">暂无评价~</view>
+					</view>
+					<view class="pdtb15 flexCenter" v-if="messageData.length>2">
 						<view class="fs13 color6 flexCenter" @click="Router.navigateTo({route:{path:'/pages/evaluate/evaluate'}})">查看更多<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 					</view>
 				</view>
@@ -102,24 +108,94 @@
 				curr:1,
 				pingjiaData:[{},{}],
 				productData:[],
-				mainData:{}
+				mainData:{},
+				messageData:[],
+				isShare:false
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
 			self.id = options.id;
-			self.$Utils.loadAll(['getMainData','getProductData'], self);
+			if(options.user_no){
+				self.isShare = true;
+				uni.setStorageSync('parent_no',option.user_no)
+			};
+			self.$Utils.loadAll(['getMainData','getProductData','getMessageData'], self);
 		},
 		
 		onShow() {
 			const self = this;
 			self.orderList = [];
-			uni.removeStorageSync('payPro')
+			uni.removeStorageSync('payPro');
+			self.getUserInfoData()
 		},
 		
+		onShareAppMessage(ops) {
+			console.log(ops)
+			const self = this;
+			if (ops.from === 'button') {
+				return {
+					title: '常道-'+self.mainData.title,
+					path: '/pages/searviceDetail/searviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo')?uni.getStorageSync('staffInfo').user_no:uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
+					imageUrl:self.mainData.mainImg[0].url,
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+			}else{
+				return {
+					title: '常道-'+self.mainData.title,
+					path: '/pages/searviceDetail/searviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo')?uni.getStorageSync('staffInfo').user_no:uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
+					imageUrl:self.mainData.mainImg[0].url,
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+				console.log(ops.target)
+			}
+		},
 		
 		methods: {
+			
+			getUserInfoData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = {
+					user_no:uni.getStorageSync('user_info').user_no
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.userInfoData = res.info.data[0];
+						if(!self.isShare){
+							if(self.userInfoData.phone==''){
+								self.Router.navigateTo({route:{path:'/pages/register/register'}})
+							}
+						}
+					}
+					console.log('self.userInfoData', self.userInfoData)
+					//self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
+			
+			phoneCall(){
+				const self = this;
+				uni.makePhoneCall({
+					phoneNumber:self.mainData.phone
+				})
+			},
 			
 			goBuy(){
 				const self = this;
@@ -163,6 +239,34 @@
 				self.$apis.productGet(postData, callback);
 			},
 			
+			getMessageData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.paginate = {
+					count: 0,
+					currentPage: 1,
+					is_page: true,
+					pagesize: 3
+				};
+				postData.searchItem = {
+					thirdapp_id: 2,
+					relation_id :self.id,
+					type:1,
+					user_type:0
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.messageData.push.apply(self.messageData, res.info.data);
+					}
+					console.log('23',res.info.total)
+					self.totalMessage = res.info.total;
+					console.log('self.messageData', self.messageData)
+					self.$Utils.finishFunc('getMessageData');
+				};
+				self.$apis.messageGet(postData, callback);
+			},
+			
 			getProductData() {
 				const self = this;
 				const postData = {};
@@ -198,5 +302,15 @@
 	@import "../../assets/style/pingjia.css";
 	@import "../../assets/style/product.css";
 	page{padding-bottom: 150rpx;}
-	
+	button{
+		background: none;
+		line-height: 1.5;
+		margin-left: 0;
+		margin-right: 0;
+		font-size: 15px;
+		border-radius: 0;
+	}
+	button::after{
+		border: none;
+	}
 </style>

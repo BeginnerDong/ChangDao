@@ -5,8 +5,9 @@
 			<view class="ftw fs14 mgb10">简介</view>
 			<view class="xqInfor">
 				<view class="cont fs12">
-					<view>管理客服电话还房贷两个号和个梵蒂冈悲愤交加鹤骨鸡肤供货方点击可供货方都拉黑干活的放假开个会过分的话看刚发的刚发的个人个人赛退热贴热推</view>
-					<view>花港饭店两三个号换个卡富家大室联合国利干活附近的开个会发和公交卡方大化工干活附近的看和</view>
+					<view class="content ql-editor" style="padding:0;"
+					v-html="mainData.content">
+					</view>
 				</view>
 			</view>
 		</view>
@@ -15,7 +16,9 @@
 		<view class="mglr4 pdt20 pdb15">
 			<view class="ftw fs14 mgb10">相册</view>
 			<view class="photoBox flexRowBetween">
-				<view class="item" v-for="(item,index) in photoData" :key="index"><image src="../../static/images/jianjie-img.png" mode=""></image></view>
+				<view class="item" v-for="(item,index) in mainData.mainImg" :key="index">
+					<image :src="item.url" mode=""></image>
+				</view>
 			</view>
 		</view>
 		
@@ -29,24 +32,35 @@
 		data() {
 			return {
 				Router:this.$Router,
-				showView: false,
-				wx_info:{},
-				is_show:false,
+				mainData:{},
 				photoData:[{},{},{},{}]
 			}
 		},
-		onLoad() {
+		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.user_no = options.user_no;
+			self.$Utils.loadAll(['getMainData'], self);
 		},
 		methods: {
+			
 			getMainData() {
 				const self = this;
-				console.log('852369')
 				const postData = {};
-				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.tokenFuncName ='getProjectToken';
+				postData.searchItem = {
+					user_type:1,
+					user_no:self.user_no
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData = res.info.data[0]
+						const regex = new RegExp('<img', 'gi');
+						self.mainData.content = self.mainData.content.replace(regex, `<img style="max-width: 100%;"`);
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.userInfoGet(postData, callback);
+			},
 		}
 	};
 </script>

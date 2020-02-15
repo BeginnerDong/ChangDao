@@ -82,29 +82,32 @@
 							</view>
 							<view class="LRbet fs12" v-if="item.transport_status==2&&item.isremark==0">
 								<view class="adviseF5 fs12">
-									<span class="ftw">健康管理意见：</span>是的解放路开发和公交卡发烧了连霍高速换个飞机卡死了个很费时间开了个会挂号费就开始都发的及共和见客户
+									<span class="ftw">健康管理意见：</span>{{item.passage3}}
 								</view>
 								<view class="underBtn flexEnd mgt15">
-									<view class="Bbtn" @click="Router.navigateTo({route:{path:'/pages/user-orderPingJia/user-orderPingJia'}})">去评价</view>
+									<view class="Bbtn" 
+									:data-id="item.id"
+									@click="Router.navigateTo({route:{path:'/pages/user-orderPingJia/user-orderPingJia?id='+$event.currentTarget.dataset.id}})">去评价</view>
 								</view>
 							</view>
 							<view class="LRbet fs12" v-if="item.isremark==1">
 								<view class="adviseF5 fs12">
-									<span class="ftw">健康管理意见：</span>是的解放路开发和公交卡发烧了连霍高速换个飞机卡死了个很费时间开了个会挂号费就开始都发的及共和见客户
+									<span class="ftw">健康管理意见：</span>{{item.passage3}}
 								</view>
 								<view class="adviseF5 fs12 mgt15">
-									<span class="ftw">评价：</span>是的解放路开发和公交卡发烧了连霍高速换个飞机卡死了个很费时间开了个会挂号费就开始都发的及共和见客户
+									<span class="ftw">评价：</span>{{item.remark&&item.remark.description?item.remark.description:''}}
 								</view>
 							</view>
 						</view>
 						<view v-if="item.type==2">
 							<view class="underBtn flexEnd mgt15">
 								<!-- <view class="Bbtn">去支付</view> -->
-								<view class="Bbtn">确认收货</view>
-								<view class="Bbtn" @click="Router.navigateTo({route:{path:'/pages/user-orderPingJia/user-orderPingJia'}})">去评价</view>
+								<view class="Bbtn" v-if="item.transport_status==1">确认收货</view>
+								<view class="Bbtn" v-if="item.transport_status==2&&item.isremark==0" :data-id="item.id" 
+						@click="Router.navigateTo({route:{path:'/pages/user-orderPingJia/user-orderPingJia?id='+$event.currentTarget.dataset.id}})">去评价</view>
 							</view>
-							<view class="adviseF5 fs12 mgt15">
-								<span class="ftw">评价：</span>是的解放路开发和公交卡发烧了连霍高速换个飞机了个很费时间开了个会挂号费就开始都发的及共和见客户
+							<view class="adviseF5 fs12 mgt15" v-if="item.isremark==1">
+								<span class="ftw">评价：</span>{{item.remark&&item.remark.description?item.remark.description:''}}
 							</view>
 						</view>
 					</view>
@@ -175,6 +178,16 @@
 							status:1
 						},
 						condition:'='
+					},
+					remark:{
+						tableName:'Message',
+						middleKey:'order_no',
+						key:'order_no',
+						searchItem:{
+							status:1
+						},
+						condition:'=',
+						info:['description']
 					},
 				};
 				const callback = (res) => {

@@ -35,7 +35,8 @@
 							<image class="seltIcon" :src="passage2==item.user_no?'../../static/images/the-order-icon.png':'../../static/images/the-order-icon1.png'" mode=""></image>
 							<view>{{item.name}}</view>
 						</view>
-						<view class="flexEnd" @click="Router.navigateTo({route:{path:'/pages/staffDetail/staffDetail'}})"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
+						<view class="flexEnd"   :data-user_no="item.user_no"
+						@click="Router.navigateTo({route:{path:'/pages/staffDetail/staffDetail?user_no='+$event.currentTarget.dataset.user_no}})"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 					</view>
 				</view>
 			</view>
@@ -50,9 +51,9 @@
 		<view class="PayShow" v-show="is_PayShow">
 			<view class="closebtn" @click="PayShow">×</view>
 			<view class="center ftw fs22 red">￥{{totalPrice}}</view>
-			<view class="flexCenter mgt10">
+			<!-- <view class="flexCenter mgt10">
 				<view class="countDown">请在<span class="red">19:57</span>内完成支付</view>
-			</view>
+			</view> -->
 			<view class="seltLis fs13">
 				<view class="item flexRowBetween" @click="changePay('1')">
 					<view class="flex">
@@ -99,17 +100,61 @@
 				staffData:[],
 				totalPrice:0,
 				pay:{},
-				isMember:false
+				isMember:false,
+				ratio:0
 			}
 		},
 		
 		onLoad() {
 			const self = this;
 			self.mainData = uni.getStorageSync('payPro');
-			self.$Utils.loadAll(['getStaffData','getUserInfoData'], self);
+			self.$Utils.loadAll(['getStaffData','getUserInfoData','getDistriData'], self);
 		},
 		
 		methods: {
+			
+			getDistriData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					child_no:uni.getStorageSync('user_info').user_no
+				};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.getAfter = {
+					user:{
+						tableName:'UserInfo',
+						middleKey:'parent_no',
+						key:'user_no',
+						condition:'=',
+						searchItem:{
+							status:1
+						},
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.distriData =  res.info.data[0]
+					};
+					if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==1){
+						self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.staff)/100;
+					}else if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==0){
+						if(self.distriData.user[0].level==0){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.user)/100;
+						}else if(self.distriData.user[0].level==1){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_one)/100;
+						}else if(self.distriData.user[0].level==2){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_two)/100;
+						}else if(self.distriData.user[0].level==3){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_three)/100;
+						}else if(self.distriData.user[0].level==4){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_four)/100;
+						}
+					};
+					console.log(self.ratio)
+					self.$Utils.finishFunc('getDistriData');
+				};
+				self.$apis.distriGet(postData, callback);
+			},
 			
 			getUserInfoData() {
 				const self = this;
@@ -226,43 +271,32 @@
 			goPay(order_id) {
 				const self = this;	
 				uni.setStorageSync('canClick',false);
-				/* var shopMoney = parseFloat(self.firstMoney) - parseFloat(self.firstMoney)*(parseFloat(self.mainData[0].product.tax)/100)
-				var platformMoney = parseFloat(self.firstMoney) - parseFloat(shopMoney); */
+				
 				const postData = self.$Utils.cloneForm(self.pay)	
 				postData.tokenFuncName = 'getProjectToken',
 				postData.searchItem = {
 					id: self.orderId
 				};	
-				/* postData.payAfter = [
-					{
-						tableName: 'FlowLog',
-						FuncName: 'add',
-						data: {
-							count:parseFloat(shopMoney).toFixed(2),
-							thirdapp_id:2,
-							status:1,
-							trade_info:'首付款',
-							type:2,
-							account:1,
-							user_no:self.mainData[0].product.user_no,
-							relation_user:uni.getStorageSync('user_info').user_no
+				if(self.ratio>0){
+					postData.payAfter = [
+						{
+							tableName: 'FlowLog',
+							FuncName: 'add',
+							data: {
+								count:(parseFloat(self.totalPrice)*self.ratio).toFixed(2),
+								thirdapp_id:2,
+								status:1,
+								trade_info:'推广佣金',
+								type:2,
+								account:1,
+								behavior:2,
+								user_no:self.distriData.parent_no,
+								relation_user:uni.getStorageSync('user_info').user_no
+							},
 						},
-					},
-					{
-						tableName: 'FlowLog',
-						FuncName: 'add',
-						data: {
-							count:parseFloat(platformMoney).toFixed(2),
-							thirdapp_id:2,
-							status:1,
-							trade_info:'平台抽佣',
-							type:2,
-							account:1,
-							user_no:'U910872296194660',
-							relation_user:self.mainData[0].product.user_no
-						},
-					},
-				]; */
+					];
+				}
+				
 				const callback = (res) => {
 					if (res.solely_code == 100000) {
 						uni.setStorageSync('canClick', true);
@@ -346,10 +380,30 @@
 				self.is_show = !self.is_show;
 				self.is_PayShow = !self.is_PayShow;
 			},
+			
 			changePay(payCurr){
 				const self = this;
 				if(payCurr!=self.payCurr){
-					self.payCurr = payCurr
+					self.payCurr = payCurr;
+					if(self.payCurr==1){
+						delete self.pay.wxPay;
+						if (parseFloat(self.totalPrice) > 0) {
+							self.pay.score = {
+								price: parseFloat(self.totalPrice).toFixed(2),
+							};
+						} else {
+							  delete self.pay.score;	 
+						};
+					}else if(self.payCurr==2){
+						delete self.pay.score;
+						if (parseFloat(self.totalPrice) > 0) {
+							self.pay.wxPay = {
+								price: parseFloat(self.totalPrice).toFixed(2),
+							};
+						} else {
+							  delete self.pay.wxPay;	 
+						};
+					}
 				}
 			}
 		}
