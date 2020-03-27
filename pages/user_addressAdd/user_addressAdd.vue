@@ -10,7 +10,7 @@
 			<view class="item flexRowBetween pdtb15 borderB1">
 				<view class="ll">手机号码</view>
 				<view class="rr fs13" >
-					<input type="number"  v-model="submitData.phone" placeholder="请输入手机号码" placeholder-class="placeholder">
+					<input type="number"  v-model="submitData.phone" maxlength="11" placeholder="请输入手机号码" placeholder-class="placeholder">
 				</view>
 			</view>	
 			<view class="item flexRowBetween pdtb15 borderB1">
@@ -60,7 +60,7 @@
 					city:'',
 					detail: '',
 					phone:'',
-					isdefault:'' 
+					isdefault:'0' 
 				},
 				
 				mulLinkageTwoPicker: cityData,
@@ -307,7 +307,11 @@
 				console.log('self.data.sForm', self.submitData)
 				console.log('pass', pass)
 				if (pass) {
-					
+					if (self.submitData.phone.trim().length != 11 || !/^1[3|4|5|6|7|8|9]\d{9}$/.test(self.submitData.phone)) {
+						uni.setStorageSync('canClick', true);
+						self.$Utils.showToast('手机格式不正确', 'none')	
+						return
+					};
 					if (self.id) {
 
 						self.addressUpdate();

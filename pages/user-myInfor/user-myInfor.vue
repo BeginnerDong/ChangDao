@@ -117,7 +117,7 @@
 				const callback = (res) => {
 					if (res.info.data.length > 0) {
 						self.mainData = res.info.data[0];
-						self.submitData.name = self.mainData.name;
+						
 						if(self.submitData.gender!=0){
 							self.submitData.gender = self.mainData.gender;
 						};
@@ -140,7 +140,9 @@
 			
 			choose(item){
 				const self = this;
-				self.submitData.gender = item
+				self.submitData.gender = item;
+				self.is_show = false;
+				self.is_seltSexShow =false;
 			},
 			
 			submit() {

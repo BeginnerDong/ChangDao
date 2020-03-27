@@ -62,7 +62,17 @@ export default {
 		http.HTTP(allParams);
 	},
 	
-	
+	getQrCode(param, callback) {
+		var allParams = {
+			url: 'Base/Qr/ProgramQrGet',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
 
 	monthFlow(param, callback) {
 

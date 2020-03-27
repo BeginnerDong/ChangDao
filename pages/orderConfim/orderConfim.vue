@@ -47,9 +47,27 @@
 			<button class="payBtn" open-type="getUserInfo"  @getuserinfo="Utils.stopMultiClick(submit)">提交订单</button>
 		</view>
 		
+		
+		
 		<view class="black-bj" v-show="is_show"></view>
+		
+		
+		<!-- 不是会员购买会员弹框 -->
+		<view class="payVipShow" v-show="is_payVipShow">
+			<view class="flexCenter">
+				<image class="icon" src="../../static/images/members-img.png"></image>
+			</view>
+			<view class="pdt15 pdb20 fs12" style="line-height: 44rpx;">您现在还不是会员，建议您购买会员，享受服务和产品的优惠折扣，享受佣金以及返利收益</view>
+			<view class="submitbtn">
+				<view class="Wbtn" style="border-radius: 10rpx;" @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">购买</view>
+			</view>
+			<view class="mgt20">
+				<view class="center pdtb10 color6" @click="PayShow">暂不购买</view>
+			</view>
+		</view>
+		
 		<view class="PayShow" v-show="is_PayShow">
-			<view class="closebtn" @click="PayShow">×</view>
+			<view class="closebtn" @click="PayShowClose">×</view>
 			<view class="center ftw fs22 red">￥{{totalPrice}}</view>
 			<!-- <view class="flexCenter mgt10">
 				<view class="countDown">请在<span class="red">19:57</span>内完成支付</view>
@@ -71,7 +89,7 @@
 				</view>
 			</view>
 			<view class="submitbtn" style="margin-top:80rpx ;">
-				<button class="btn" type="submint"   @click="Utils.stopMultiClick(goPay)">立即支付</button>
+				<button class="btn" type="submint"   @click="Utils.stopMultiClick(message)">立即支付</button>
 			</view>
 		</view>
 		
@@ -94,6 +112,7 @@
 				servicerData:[{},{},{},{},{},{}],
 				payCurr:1,
 				is_PayShow:false,
+				is_payVipShow:false,
 				passage1:'',
 				passage2:'',
 				mainData:[],
@@ -112,6 +131,19 @@
 		},
 		
 		methods: {
+			
+			message(){
+				const self = this;
+				wx.requestSubscribeMessage({
+				  tmplIds: ['0hcW79pWe-rRGN0tb5ov_TiqreKFyTR2ZosT030_sYY','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
+				  success (res) { 
+					  console.log(res)
+					  if(res){
+						  self.goPay()
+					  }
+				  }
+				})
+			},
 			
 			getDistriData() {
 				const self = this;
@@ -168,7 +200,7 @@
 				const callback = (res) => {
 					if (res.solely_code == 100000 && res.info.data[0]) {
 						self.userInfoData = res.info.data[0];
-						if(self.userInfoData.level>0&&parseInt(self.userInfoData.deadline)>nowTime){
+						if(self.userInfoData.level>0){
 							self.isMember = true
 						}
 					} else {
@@ -255,8 +287,11 @@
 						
 						self.orderId = res.info.id;
 						//self.goPay()
-						self.is_show = !self.is_show;
-						self.is_PayShow = !self.is_PayShow;
+						/* self.is_show = !self.is_show;
+						self.is_PayShow = !self.is_PayShow; */
+						
+						self.is_show = true
+						self.is_payVipShow = !self.is_payVipShow;
 					} else {		
 						
 						uni.showToast({
@@ -375,10 +410,22 @@
 				self.passage2 = item
 			},
 			
+			payVipShow(){
+				const self = this;
+				self.is_show = true
+				self.is_payVipShow = !self.is_payVipShow;
+			},
+			
 			PayShow(){
 				const self = this;
-				self.is_show = !self.is_show;
-				self.is_PayShow = !self.is_PayShow;
+				self.is_payVipShow = false;
+				self.is_PayShow = true;
+			},
+			
+			PayShowClose(){
+				const self = this;
+				self.is_show = false;
+				self.is_PayShow = false;
 			},
 			
 			changePay(payCurr){
@@ -435,4 +482,8 @@
 	.seltLis .item{padding: 30rpx 0;border-bottom: 1px solid #eee;}
 	.seltLis .item .icon{width: 40rpx;height: 40rpx; display: block;margin-right: 20rpx;}
 	.seltLis .item .seltIcon{width: 36rpx;height: 36rpx;}
+	
+	/* 不是会员购买弹框 */
+	.payVipShow{width: 80%;border-radius: 10rpx;background: #fff;padding: 60rpx 50rpx;box-sizing: border-box;position: fixed;top: 50%;left: 50%;transform: translate(-50%,-50%);z-index: 45;}
+	.payVipShow .icon{width: 220rpx;height: 198rpx; }
 </style>

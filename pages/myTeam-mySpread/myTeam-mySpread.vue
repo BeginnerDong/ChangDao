@@ -24,7 +24,7 @@
 		<view class="black-bj" v-show="is_show"></view>
 		<view class="ewmAlert" v-show="is_ewmShow">
 			<view class="closeBtn" @click="ewmShow">×</view>
-			<image class="ewm" src="../../static/images/promote-img1.png" mode=""></image>
+			<image class="ewm" :src="QrData.url" mode=""></image>
 		</view>
 		
 		
@@ -39,7 +39,8 @@
 				spendData:[{},{},{}],
 				is_show:false,
 				is_ewmShow:false,
-				mainData:[]
+				mainData:[],
+				QrData:{}
 			}
 		},
 		
@@ -59,6 +60,28 @@
 		},
 		
 		methods: {
+			
+			
+			getQrData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getStaffToken'
+				postData.qrInfo = {
+					scene: wx.getStorageSync('staffInfo').user_no,
+					path: 'pages/index/index',
+				};
+				postData.output = 'url';
+				postData.ext = 'png';
+				const callback = (res) => {
+					if (res.solely_code == 100000) {
+						self.QrData = res.info;
+					} else {
+						self.$Utils.showToast(res.msg, 'none')
+					}
+					self.$Utils.finishFunc('getQrData');
+				};
+				self.$apis.getQrCode(postData, callback);
+			},
 			
 			
 			getMainData(isNew) {

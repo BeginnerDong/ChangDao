@@ -60,8 +60,11 @@
 				mainData:{}
 			}
 		},
-		onLoad() {
+		onLoad(options) {
 			const self = this;
+			if(options.type){
+				self.scanCode()
+			};
 			self.$Utils.loadAll(['getMainData'], self);
 		},
 		

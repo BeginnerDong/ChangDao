@@ -2,17 +2,17 @@
 	<view>
 		
 		<view class="mglr4 pingjia">
-			<view class="item" v-for="(item,index) in pingjiaData" :key="index">
+			<view class="item" v-for="(item,index) in mainData" :key="index">
 				<view class="flexRowBetween pdb10">
 					<view class="flex">
 						<view class="photo mgr10">
-							<image src="../../static/images/details-img2.png" mode=""></image>
+							<image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image>
 						</view>
-						<view class="fs13">快乐的猫</view>
+						<view class="fs13">{{item.title}}</view>
 					</view>
-					<view class="flexEnd color6 fs12">2020.01.17</view>
+					<view class="flexEnd color6 fs12">{{item.create_time}}</view>
 				</view>
-				<view class="fs13">好的浓香型白酒用语是,酒体清亮透明,入口绵甜,落口爽净,回味悠长,值得信赖。</view>
+				<view class="fs13">{{item.description}}</view>
 			</view>
 		</view>
 		
@@ -27,22 +27,51 @@
 				showView: false,
 				wx_info:{},
 				is_show:false,
-				pingjiaData:[{},{},{},{}]
+				pingjiaData:[{},{},{},{}],
+				mainData:[]
 			}
 		},
 		
-		onLoad() {
+		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.id = options.id;
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
+		onReachBottom() {
+			console.log('onReachBottom')
+			const self = this;
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				self.getMainData()
+			};
+		},
+		
 		methods: {
+			
 			getMainData() {
 				const self = this;
-				console.log('852369')
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					thirdapp_id: 2,
+					relation_id :self.id,
+					type:1,
+					user_type:0
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData.push.apply(self.mainData, res.info.data);
+					}
+					console.log('23',res.info.total)
+					self.totalMessage = res.info.total;
+					console.log('self.mainData', self.mainData)
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.messageGet(postData, callback);
+			},
 		}
 	};
 </script>

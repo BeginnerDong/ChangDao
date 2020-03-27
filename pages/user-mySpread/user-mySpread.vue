@@ -38,7 +38,7 @@
 		<view class="black-bj" v-show="is_show"></view>
 		<view class="ewmAlert" v-show="is_ewmShow">
 			<view class="closeBtn" @click="ewmShow">×</view>
-			<image class="ewm" src="../../static/images/promote-img1.png" mode=""></image>
+			<image class="ewm" :src="QrData.url" mode=""></image>
 		</view>
 		
 		
@@ -64,13 +64,14 @@
 					thirdapp_id:2,
 					
 				},
+				QrData:{}
 			}
 		},
 		
 		onLoad() {
 			const self = this;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getMainData','getUserInfoData'], self);
+			self.$Utils.loadAll(['getMainData','getUserInfoData','getQrData'], self);
 		},
 		
 		onReachBottom() {
@@ -87,6 +88,28 @@
 		},
 		
 		methods: {
+			
+			
+			getQrData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken'
+				postData.qrInfo = {
+					scene: wx.getStorageSync('user_info').user_no,
+					path: 'pages/index/index',
+				};
+				postData.output = 'url';
+				postData.ext = 'png';
+				const callback = (res) => {
+					if (res.solely_code == 100000) {
+						self.QrData = res.info;
+					} else {
+						self.$Utils.showToast(res.msg, 'none')
+					}
+					self.$Utils.finishFunc('getQrData');
+				};
+				self.$apis.getQrCode(postData, callback);
+			},
 			
 			change(num){
 				const self = this;

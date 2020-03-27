@@ -7,7 +7,7 @@
 				<view class="item flex">
 					<view class="ll">账号：</view>
 					<view class="rr">
-						<input type="text" v-model="submitData.phone" placeholder="请输入手机号" placeholder-class="placeholder" />
+						<input type="text" v-model="submitData.phone" maxlength="11" placeholder="请输入手机号" placeholder-class="placeholder" />
 					</view>
 				</view>
 				<!-- <view class="item flex">
@@ -68,6 +68,11 @@
 				console.log('self.submitData',self.submitData)
 				
 				if (pass) {	
+					if (self.submitData.phone.trim().length != 11 || !/^1[3|4|5|6|7|8|9]\d{9}$/.test(self.submitData.phone)) {
+						uni.setStorageSync('canClick', true);
+						self.$Utils.showToast('手机格式不正确', 'none')	
+						return
+					};
 					const callback = (user, res) => {
 						console.log(res)
 						self.userInfoUpdate();
@@ -90,6 +95,7 @@
 				postData.data = {
 					phone:self.submitData.phone
 				};
+				postData.refreshToken = true;
 				if(uni.getStorageSync('parent_no')){
 					postData.saveAfter = [
 						{
@@ -100,7 +106,8 @@
 								status:1,
 								parent_no:uni.getStorageSync('parent_no'),
 								child_no:uni.getStorageSync('user_info').user_no,
-								level:1
+								level:1,
+								type:1
 							},
 						},
 					];

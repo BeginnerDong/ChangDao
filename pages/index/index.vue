@@ -36,7 +36,7 @@
 				<image src="../../static/images/home-icon4.png"></image>
 				<view class="tit">会员信息</view>
 			</view>
-			<view class="item" @click="Router.navigateTo({route:{path:'/pages/login/login'}})">
+			<view class="item" @click="Router.navigateTo({route:{path:'/pages/myTeam-login/myTeam-login?type=index'}})">
 				<image src="../../static/images/home-icon5.png"></image>
 				<view class="tit">扫一扫</view>
 			</view>
@@ -48,14 +48,11 @@
 				<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 				<view class="infor">
 					<view class="tit avoidOverflow">{{item.title}}</view>
-					<view class="flex">
-						<view class="price fs16 ftw">{{item.price}}</view>
-						<view class="flex VipPrice fs10">
-							<view>会员价</view>
-							<view class="mny">{{item.member_price}}</view>
-						</view>
+					<view class="price fs16 ftw tit">{{item.price}}</view>
+					<view class="flex  fs10">
+						<view>会员价</view>
+						<view class="mny">{{item.member_price}}</view>
 					</view>
-					
 				</view>
 			</view>
 		</view>
@@ -114,10 +111,14 @@
 			}
 		},
 		
-		onLoad() {
+		onLoad(options) {
 			const self = this;
+			if(options.scene){
+				var scene = decodeURIComponent(options.scene);
+				uni.setStorageSync('parent_no',scene)
+			};
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData'], self);
+			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData','getShopData'], self);
 		},
 		
 		onReachBottom() {
@@ -130,6 +131,21 @@
 		},
 		
 		methods: {
+			
+			getShopData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					title:'商家信息',
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						uni.setStorageSync('shopInfo',res.info.data[0])
+					}
+					self.$Utils.finishFunc('getShopData');
+				};
+				self.$apis.labelGet(postData, callback);
+			},
 			
 			getUserInfoData() {
 				const self = this;

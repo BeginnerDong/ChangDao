@@ -5,16 +5,19 @@
 			<image :src="mainData.bannerImg&&mainData.bannerImg[0]?mainData.bannerImg[0].url:''" mode=""></image>
 		</view>
 		<view class="mglr4 pdtb15 fs14">
-			<view class="tit mgb10">{{mainData.title}}</view>
+			<view class="tit mgb10">{{mainData.title?mainData.title:''}}</view>
 			<view class="flexRowBetween">
 				<view class="flex">
-					<view class="price fs16 ftw">{{mainData.price}}</view>
+					<view class="price fs16 ftw">{{mainData.price?mainData.price:''}}</view>
 					<view class="flex VipPrice fs10">
 						<view>会员价</view>
-						<view class="mny">{{mainData.member_price}}</view>
+						<view class="mny">{{mainData.member_price?mainData.member_price:''}}</view>
 					</view>
 				</view>
-				<button class="fs12 color6 flexEnd" open-type="share">
+				<button class="fs12 color6 flexEnd" v-if="!staffShare" open-type="share" id="userShare">
+					<image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享
+				</button>
+				<button class="fs12 color6 flexEnd" v-if="staffShare" open-type="share" id="staffShare">
 					<image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享
 				</button>
 			</view>
@@ -22,7 +25,7 @@
 		</view>
 		<view class="f5H5"></view>
 		<view class="mglr4 pdtb15 flexRowBetween" @click="phoneCall">
-			<view class="fs13">电话：{{mainData.phone}}</view>
+			<view class="fs13">电话：{{mainData.phone?mainData.phone:''}}</view>
 			<view class="flexEnd"><image style="width: 34rpx;height: 34rpx;" src="../../static/images/details-icon1.png" mode=""></image></view>
 		</view>
 		<view class="f5H5"></view>
@@ -57,7 +60,7 @@
 						<view class="fs13" style="text-align: center;">暂无评价~</view>
 					</view>
 					<view class="pdtb15 flexCenter" v-if="messageData.length>2">
-						<view class="fs13 color6 flexCenter" @click="Router.navigateTo({route:{path:'/pages/evaluate/evaluate'}})">查看更多<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
+						<view class="fs13 color6 flexCenter" @click="Router.navigateTo({route:{path:'/pages/evaluate/evaluate?id='+mainData.id}})">查看更多<image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 					</view>
 				</view>
 			</view>
@@ -110,17 +113,22 @@
 				productData:[],
 				mainData:{},
 				messageData:[],
-				isShare:false
+				isShare:false,
+				staffShare:false
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
 			self.id = options.id;
+			if(uni.getStorageSync('staffInfo')){
+				self.staffShare = true
+			};
 			if(options.user_no){
 				self.isShare = true;
-				uni.setStorageSync('parent_no',option.user_no)
+				uni.setStorageSync('parent_no',options.user_no)
 			};
+			console.log('options',options)
 			self.$Utils.loadAll(['getMainData','getProductData','getMessageData'], self);
 		},
 		
@@ -134,10 +142,11 @@
 		onShareAppMessage(ops) {
 			console.log(ops)
 			const self = this;
-			if (ops.from === 'button') {
+			if (ops.target.id === 'staffShare') {
+				
 				return {
 					title: '常道-'+self.mainData.title,
-					path: '/pages/searviceDetail/searviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo')?uni.getStorageSync('staffInfo').user_no:uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
+					path: '/pages/serviceDetail/serviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo').user_no, //点击分享的图片进到哪一个页面
 					imageUrl:self.mainData.mainImg[0].url,
 					success: function(res) {
 						// 转发成功
@@ -151,7 +160,7 @@
 			}else{
 				return {
 					title: '常道-'+self.mainData.title,
-					path: '/pages/searviceDetail/searviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo')?uni.getStorageSync('staffInfo').user_no:uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
+					path: '/pages/serviceDetail/serviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
 					imageUrl:self.mainData.mainImg[0].url,
 					success: function(res) {
 						// 转发成功
@@ -200,6 +209,22 @@
 			goBuy(){
 				const self = this;
 				uni.setStorageSync('canClick',false);
+				if(self.userInfoData.phone==''){
+					uni.showModal({
+						title: '提示',
+						content: '您还未注册，清先进行注册',
+						success: function(res) {
+							if (res.confirm) {
+								self.Router.navigateTo({route:{path:'/pages/register/register'}})
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+					uni.setStorageSync('canClick',true);
+					return
+				};
+				
 				self.orderList.push(
 					{product_id:self.mainData.id,count:1,
 					type:1,product:self.mainData},

@@ -89,30 +89,38 @@
 			
 			submit() {
 				const self = this;
-				uni.setStorageSync('canClick', false);
-				if(!self.userInfoData.card_no){
-					uni.setStorageSync('canClick', true);
-					self.$Utils.showToast('请先绑定银行卡', 'none');
-					return
-				};
-				const pass = self.$Utils.checkComplete(self.submitData);
-				console.log('self.submitData',self.submitData)
-				if (pass) {
-					if(parseFloat(self.submitData.count)>parseFloat(self.userInfoData.balance)){
-						uni.setStorageSync('canClick', true);
-						self.$Utils.showToast('余额不足', 'none');
-						return
-					};
-					if(parseFloat(self.submitData.count)<=0){
-						uni.setStorageSync('canClick', true);
-						self.$Utils.showToast('请输入正确的金额', 'none');
-						return
-					};
-						self.flowLogAdd();
-				} else {
-					uni.setStorageSync('canClick', true);
-					self.$Utils.showToast('请输入提现金额', 'none')
-				};
+				wx.requestSubscribeMessage({
+				  tmplIds: ['erhS7WH5XbfMelKP5vRFtU4UHzEsDHAc3k0kE-pG1m0','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
+				  success (res) { 
+					  console.log(res)
+					  if(res){
+						 uni.setStorageSync('canClick', false);
+						 if(!self.userInfoData.card_no){
+						 	uni.setStorageSync('canClick', true);
+						 	self.$Utils.showToast('请先绑定银行卡', 'none');
+						 	return
+						 };
+						 const pass = self.$Utils.checkComplete(self.submitData);
+						 console.log('self.submitData',self.submitData)
+						 if (pass) {
+						 	if(parseFloat(self.submitData.count)>parseFloat(self.userInfoData.balance)){
+						 		uni.setStorageSync('canClick', true);
+						 		self.$Utils.showToast('余额不足', 'none');
+						 		return
+						 	};
+						 	if(parseFloat(self.submitData.count)<=0){
+						 		uni.setStorageSync('canClick', true);
+						 		self.$Utils.showToast('请输入正确的金额', 'none');
+						 		return
+						 	};
+						 		self.flowLogAdd();
+						 } else {
+						 	uni.setStorageSync('canClick', true);
+						 	self.$Utils.showToast('请输入提现金额', 'none')
+						 };
+					  }
+				  }
+				})
 			},
 			
 			flowLogAdd() {

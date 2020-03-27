@@ -61,7 +61,7 @@
 				<view class="Wbtn" style="border-radius: 10rpx;" @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">购买</view>
 			</view>
 			<view class="mgt20">
-				<view class="center pdtb10 color6" @click="Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})">暂不购买</view>
+				<view class="center pdtb10 color6" @click="PayShow">暂不购买</view>
 			</view>
 		</view>
 		
@@ -89,7 +89,7 @@
 				</view>
 			</view>
 			<view class="submitbtn" style="margin-top:80rpx ;">
-				<button class="btn" type="submint"  @click="Utils.stopMultiClick(goPay)">立即支付</button>
+				<button class="btn" type="submint"  @click="Utils.stopMultiClick(message)">立即支付</button>
 			</view>
 		</view>
 		
@@ -136,6 +136,20 @@
 		},
 		
 		methods: {
+			
+			
+			message(){
+				const self = this;
+				wx.requestSubscribeMessage({
+				  tmplIds: ['OU_Tt9S7_snfsSCBBqUWDvGcjhYGhiDn4Y2vuxm9tdM','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
+				  success (res) { 
+					  console.log(res)
+					  if(res){
+						  self.goPay()
+					  }
+				  }
+				})
+			},
 			
 			getDistriData() {
 				const self = this;
@@ -192,7 +206,7 @@
 				const callback = (res) => {
 					if (res.solely_code == 100000 && res.info.data[0]) {
 						self.userInfoData = res.info.data[0];
-						if(self.userInfoData.level>0&&parseInt(self.userInfoData.deadline)>nowTime){
+						if(self.userInfoData.level>0){
 							self.isMember = true
 						}
 					} else {
@@ -301,8 +315,11 @@
 						
 						self.orderId = res.info.id;
 						//self.goPay()
-						self.is_show = !self.is_show;
-						self.is_PayShow = !self.is_PayShow;
+						self.is_show = true
+						self.is_payVipShow = !self.is_payVipShow;
+					
+						/* self.is_show = !self.is_show;
+						self.is_PayShow = !self.is_PayShow; */
 					} else {		
 						
 						uni.showToast({
@@ -358,10 +375,10 @@
 										}
 									});
 									setTimeout(function() {
-										self.is_show = true
+										/* self.is_show = true
 										self.is_payVipShow = !self.is_payVipShow;
-										self.is_PayShow = false;
-										//self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
+										self.is_PayShow = false; */
+										self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
 									}, 1000);
 								} else {
 									uni.setStorageSync('canClick', true);
@@ -382,10 +399,10 @@
 								}
 							});
 							setTimeout(function() {
-								self.is_show = true
+								/* self.is_show = true
 								self.is_payVipShow = !self.is_payVipShow;
-								self.is_PayShow = false;
-								//self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
+								self.is_PayShow = false; */
+								self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
 							}, 1000);
 						};
 					} else {

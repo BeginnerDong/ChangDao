@@ -42,9 +42,17 @@
 		onLoad(options) {
 			const self = this;
 			if (uni.getStorageSync('staffToken')&&uni.getStorageSync('staffInfo').user_type==1) {
-				uni.redirectTo({
-					url: '/pages/myTeam/myTeam'
-				})
+				if(options.type){
+					self.type = options.type;
+					uni.redirectTo({
+						url: '/pages/myTeam/myTeam?type=index'
+					})
+				}else{
+					uni.redirectTo({
+						url: '/pages/myTeam/myTeam'
+					})
+				}
+				
 			}else{
 				self.showAll = true
 			}
@@ -66,9 +74,15 @@
 							console.log(res);
 							uni.setStorageSync('staffToken', res.token);
 							uni.setStorageSync('staffInfo', res.info);
-							uni.redirectTo({
-								url: '/pages/myTeam/myTeam'
-							}) 
+							if(self.type){
+								uni.redirectTo({
+									url: '/pages/myTeam/myTeam?type=index'
+								})
+							}else{
+								uni.redirectTo({
+									url: '/pages/myTeam/myTeam'
+								})
+							}
 						} else {
 							self.$Utils.showToast(res.msg,'none')
 						}

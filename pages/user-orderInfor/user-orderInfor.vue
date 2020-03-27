@@ -70,12 +70,13 @@
 								</view>
 								<view class="line pdt15 flexRowBetween">
 									<view class="ll">地址</view>
-									<view class="rr flexEnd">陕西省西安市长安区韦曲街道</view>
+									<view class="rr flexEnd">{{item.shopAddress}}</view>
 								</view>
 								<view class="line pdt15 flexRowBetween">
 									<view class="ll"></view>
 									<view class="rr flexEnd">
-										<image class="sEwm" :src="item.qrcode" mode=""></image>
+										<image class="sEwm" @click="hxEwmShow(index)" :src="item.qrcode" mode=""></image>
+										
 									</view>
 								</view>
 								
@@ -102,7 +103,7 @@
 						<view v-if="item.type==2">
 							<view class="underBtn flexEnd mgt15">
 								<!-- <view class="Bbtn">去支付</view> -->
-								<view class="Bbtn" v-if="item.transport_status==1">确认收货</view>
+								<view class="Bbtn" v-if="item.transport_status==1" @click="orderUpdate(index)">确认收货</view>
 								<view class="Bbtn" v-if="item.transport_status==2&&item.isremark==0" :data-id="item.id" 
 						@click="Router.navigateTo({route:{path:'/pages/user-orderPingJia/user-orderPingJia?id='+$event.currentTarget.dataset.id}})">去评价</view>
 							</view>
@@ -113,6 +114,12 @@
 					</view>
 				</view>
 			</view>
+		</view>
+		
+		<view class="black-bj" v-show="is_show"></view>
+		<view class="hxEwmShow" v-show="is_hxEwmShow">
+			<view><image class="ewm" :src="mainData[chooseIndex].qrcode" mode=""></image></view>
+			<view class="closeBtn" @click="hxEwmShow">×</view>
 		</view>
 	</view>
 </template>
@@ -128,12 +135,14 @@
 				curr:1,
 				serviceNum:1,
 				is_show:false,
+				is_hxEwmShow:false,
 				proNum:1,
 				searchItem:{
 					type:1,
 					pay_status:1
 				},
-				mainData:[]
+				mainData:[],
+				chooseIndex:-1
 			}
 		},
 		
@@ -153,6 +162,43 @@
 		},
 		
 		methods: {
+			
+			
+			orderUpdate(index) {
+				const self = this;
+				uni.setStorageSync('canClick', false);
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.data = {
+					transport_status:2,
+				};
+				postData.searchItem = {
+					id:self.mainData[index].id,
+				};
+				const callback = (data) => {
+					uni.setStorageSync('canClick', true);
+					if (data && data.solely_code == 100000) {
+						self.$Utils.showToast('操作成功','none');
+						setTimeout(function() {
+							self.getMainData(true)
+						}, 1000);
+					} else {
+						self.$Utils.showToast(data.msg,'none')
+					}
+				};
+				self.$apis.orderUpdate(postData, callback);
+			 },
+			
+			hxEwmShow(index){
+				const self = this;
+				
+				if(index||index==0){
+					self.chooseIndex = index
+				};
+				self.is_show = !self.is_show
+				self.is_hxEwmShow = !self.is_hxEwmShow
+				console.log(self.chooseIndex)
+			},
 			
 			getMainData(isNew) {
 				const self = this;
@@ -193,7 +239,9 @@
 				const callback = (res) => {
 					if (res.info.data.length > 0) {
 						self.mainData.push.apply(self.mainData, res.info.data);
-						
+						for (var i = 0; i < self.mainData.length; i++) {
+							self.mainData[i].shopAddress = uni.getStorageSync('shopInfo').description
+						}
 					}
 					console.log('self.mainData', self.mainData)
 					self.$Utils.finishFunc('getMainData');
@@ -275,4 +323,8 @@
 	.LRbet .ll{width: 20%;}
 	.LRbet .rr{width: 80%;}
 	.adviseF5{padding: 30rpx;background: #f5f5f5;}
+	
+	.hxEwmShow{width: 70%;position: fixed;top: 45%;left: 50%;transform: translate(-50%,-50%);z-index: 50;}
+	.hxEwmShow .ewm{width: 400rpx;height: 400rpx;display: block; margin: 0 auto;}
+	.closeBtn{background: rgba(0,0,0,0.5);border: 0;top: auto;bottom: -130rpx;}
 </style>
