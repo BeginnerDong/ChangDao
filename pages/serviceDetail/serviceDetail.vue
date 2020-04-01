@@ -147,7 +147,7 @@
 				return {
 					title: '常道-'+self.mainData.title,
 					path: '/pages/serviceDetail/serviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('staffInfo').user_no, //点击分享的图片进到哪一个页面
-					imageUrl:self.mainData.mainImg[0].url,
+					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
 					success: function(res) {
 						// 转发成功
 						console.log("转发成功:" + JSON.stringify(res));
@@ -161,7 +161,7 @@
 				return {
 					title: '常道-'+self.mainData.title,
 					path: '/pages/serviceDetail/serviceDetail?id='+self.mainData.id+'&user_no='+uni.getStorageSync('user_info').user_no, //点击分享的图片进到哪一个页面
-					imageUrl:self.mainData.mainImg[0].url,
+					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
 					success: function(res) {
 						// 转发成功
 						console.log("转发成功:" + JSON.stringify(res));

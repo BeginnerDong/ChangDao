@@ -226,7 +226,7 @@
 				}else{
 					var money = parseFloat(normal_price);
 				}
-				self.totalPrice = parseFloat(money)
+				self.totalPrice = parseFloat(money).toFixed(2)
 				//console.log('wxPay',wxPay)
 				if (money > 0) {
 					self.pay.score = {

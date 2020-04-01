@@ -34,7 +34,7 @@
 			</view>
 			<view class="item"  @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">
 				<image src="../../static/images/home-icon4.png"></image>
-				<view class="tit">会员信息</view>
+				<view class="tit">加入会员</view>
 			</view>
 			<view class="item" @click="Router.navigateTo({route:{path:'/pages/myTeam-login/myTeam-login?type=index'}})">
 				<image src="../../static/images/home-icon5.png"></image>
