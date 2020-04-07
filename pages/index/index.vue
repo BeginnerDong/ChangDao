@@ -151,9 +151,9 @@
 				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
-				postData.searchItem = {
+				/* postData.searchItem = {
 					user_no:uni.getStorageSync('user_info').user_no
-				};
+				}; */
 				const callback = (res) => {
 					if (res.info.data.length > 0) {
 						self.userInfoData = res.info.data[0];

@@ -10,13 +10,16 @@
 						<input type="text" v-model="submitData.phone" maxlength="11" placeholder="请输入手机号" placeholder-class="placeholder" />
 					</view>
 				</view>
-				<!-- <view class="item flex">
+				<view class="item flex">
 					<view class="ll">验证码：</view>
 					<view class="rr flexRowBetween">
-						<view style="width: 40%;"><input type="text" value="" placeholder="请输入验证码" placeholder-class="placeholder" /></view>
-						<view class="flexEnd pubColor">获取验证码</view>
+						<view style="width: 40%;"><input type="number"  v-model="submitData.smsCode" placeholder="请输入验证码" placeholder-class="placeholder" /></view>
+						
+						<view class="flexEnd pubColor" @click="sendCode()" v-if="!hasSend">{{text}}</view>
+						<view class="flexEnd pubColor"  v-else>{{text}}</view>
 					</view>
-				</view> -->
+				</view>
+				
 				<view class="item flex">
 					<view class="ll">密码：</view>
 					<view class="rr">
@@ -47,8 +50,12 @@
 				is_show:false,
 				submitData:{
 					phone:'',
-					password:''
-				}
+					password:'',
+					smsCode:''
+				},
+				currentTime:61,
+				text:'获取验证码',
+				hasSend:false,
 			}
 		},
 		
@@ -58,6 +65,52 @@
 		},
 		
 		methods: {
+			
+			
+			sendCode(){
+				var self = this;
+				console.log(111)
+				if(self.hasSend){
+					return;
+				};
+				var phone = self.submitData.phone;
+				
+				if (phone.trim().length != 11 || !/^1[3|4|5|6|7|8|9]\d{9}$/.test(phone)) {
+					self.$Utils.showToast('请输入正确的手机号', 'none', 1000)
+					
+					return;
+				}
+				var postData = {
+					data:{
+						phone:self.submitData.phone,
+					
+					}
+				};
+				var callback = function(res){
+					if(res.solely_code==100000){
+						self.hasSend = true;
+						var interval = setInterval(function() {
+							self.currentTime--; //每执行一次让倒计时秒数减一
+						
+							self.text=self.currentTime + 's';//按钮文字变成倒计时对应秒数
+							
+							//如果当秒数小于等于0时 停止计时器 且按钮文字变成重新发送 且按钮变成可用状态 倒计时的秒数也要恢复成默认秒数 即让获取验证码的按钮恢复到初始化状态只改变按钮文字
+							if (self.currentTime <= 0) {
+								clearInterval(interval)
+								
+								self.hasSend = false;
+								self.text='重新发送';
+								self.currentTime= 61;
+								
+							}
+							
+						}, 1000);
+					}else{
+						self.$Utils.showToast('发送失败', 'none', 1000)
+					};
+				};
+				self.$apis.codeGet(postData, callback);
+			},
 			
 			submit() {
 				const self = this;
@@ -94,6 +147,10 @@
 				};
 				postData.data = {
 					phone:self.submitData.phone
+				};
+				postData.smsAuth = {
+					phone:self.submitData.phone,						
+					code:self.submitData.smsCode
 				};
 				postData.refreshToken = true;
 				if(uni.getStorageSync('parent_no')){
