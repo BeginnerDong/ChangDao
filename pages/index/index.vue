@@ -2,7 +2,7 @@
 	<view>
 		
 		<view class="pdlr4 whiteBj pdt15">
-			<view class="seachBox flexCenter color9 fs12" @click="Router.navigateTo({route:{path:'/pages/seach/seach'}})">
+			<view class="seachBox flexCenter color9 fs12" @click="Router.navigateTo({route:{path:'/pages/seach/seach'}})" v-if="sliderData.url&&sliderData.url!='1'">
 				<image class="icon" src="../../static/images/home-icon.png" mode=""></image>
 				<view>搜索</view>
 			</view>
@@ -18,74 +18,86 @@
 				</view>
 			</view>
 		</view>
-		
-		<view class="indHome flexRowBetween whiteBj">
-			<view class="item"  @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})">
-				<image src="../../static/images/home-icon1.png"></image>
-				<view class="tit">理疗</view>
+		<view v-if="sliderData.url&&sliderData.url!='1'">
+			<view class="indHome flexRowBetween whiteBj">
+				<view class="item"  @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})">
+					<image src="../../static/images/home-icon1.png"></image>
+					<view class="tit">理疗</view>
+				</view>
+				<view class="item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})">
+					<image src="../../static/images/home-icon2.png"></image>
+					<view class="tit">产品</view>
+				</view>
+				<view class="item" @click="Router.navigateTo({route:{path:'/pages/health/health'}})">
+					<image src="../../static/images/home-icon3.png"></image>
+					<view class="tit">健康知识</view>
+				</view>
+				<view class="item"  @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">
+					<image src="../../static/images/home-icon4.png"></image>
+					<view class="tit">加入会员</view>
+				</view>
+				<view class="item" @click="Router.navigateTo({route:{path:'/pages/myTeam-login/myTeam-login?type=index'}})">
+					<image src="../../static/images/home-icon5.png"></image>
+					<view class="tit">扫一扫</view>
+				</view>
 			</view>
-			<view class="item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})">
-				<image src="../../static/images/home-icon2.png"></image>
-				<view class="tit">产品</view>
-			</view>
-			<view class="item" @click="Router.navigateTo({route:{path:'/pages/health/health'}})">
-				<image src="../../static/images/home-icon3.png"></image>
-				<view class="tit">健康知识</view>
-			</view>
-			<view class="item"  @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">
-				<image src="../../static/images/home-icon4.png"></image>
-				<view class="tit">加入会员</view>
-			</view>
-			<view class="item" @click="Router.navigateTo({route:{path:'/pages/myTeam-login/myTeam-login?type=index'}})">
-				<image src="../../static/images/home-icon5.png"></image>
-				<view class="tit">扫一扫</view>
-			</view>
-		</view>
-		
-		<view class="mglr4 flexRowBetween productList pdtb15">
-			<view class="item radius10" v-for="(item,index) in mainData" :data-id="item.id"
-			:key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail?id='+$event.currentTarget.dataset.id}})">
-				<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
-				<view class="infor">
-					<view class="tit avoidOverflow">{{item.title}}</view>
-					<view class="price fs16 ftw tit">{{item.price}}</view>
-					<view class="flex  fs10">
-						<view>会员价</view>
-						<view class="mny">{{item.member_price}}</view>
+			
+			<view class="mglr4 flexRowBetween productList pdtb15">
+				<view class="item radius10" v-for="(item,index) in mainData" :data-id="item.id"
+				:key="index" @click="Router.navigateTo({route:{path:'/pages/serviceDetail/serviceDetail?id='+$event.currentTarget.dataset.id}})">
+					<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
+					<view class="infor">
+						<view class="tit avoidOverflow">{{item.title}}</view>
+						<view class="price fs16 ftw tit">{{item.price}}</view>
+						<view class="flex  fs10">
+							<view>会员价</view>
+							<view class="mny">{{item.member_price}}</view>
+						</view>
 					</view>
 				</view>
 			</view>
+			
+			<!--底部tab键-->
+			<view class="navbar">
+				<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/index/index'}})">
+					<view class="nav_img">
+						<image src="../../static/images/nabar1-a.png" />
+					</view>
+					<view class="text this-text">首页</view>
+				</view>
+				<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})" >
+					<view class="nav_img">
+						<image src="../../static/images/nabar2.png" />
+					</view>
+					<view class="text">{{sliderData.url&&sliderData.url!='1'?'理疗':'菜单'}}</view>
+				</view>
+				<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})" >
+					<view class="nav_img">
+						<image src="../../static/images/nabar3.png" />
+					</view>
+					<view class="text">产品</view>
+				</view>
+				<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/user/user'}})" >
+					<view class="nav_img">
+						<image src="../../static/images/nabar4.png" />
+					</view>
+					<view class="text">我的</view>
+				</view>
+			</view>
 		</view>
 		
-		<!--底部tab键-->
-		<view class="navbar">
-			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/index/index'}})">
-				<view class="nav_img">
-					<image src="../../static/images/nabar1-a.png" />
-				</view>
-				<view class="text this-text">首页</view>
-			</view>
-			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/liLiao/liLiao'}})" >
-				<view class="nav_img">
-					<image src="../../static/images/nabar2.png" />
-				</view>
-				<view class="text">理疗</view>
-			</view>
-			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})" >
-				<view class="nav_img">
-					<image src="../../static/images/nabar3.png" />
-				</view>
-				<view class="text">产品</view>
-			</view>
-			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/user/user'}})" >
-				<view class="nav_img">
-					<image src="../../static/images/nabar4.png" />
-				</view>
-				<view class="text">我的</view>
-			</view>
-		</view>
 		<!--底部tab键 end-->
-		
+		<view class="mglr4 healthList"  v-else>
+			<view class="item flexRowBetween radius10" style="margin-top: 20rpx;background-color: #fff;" v-for="(item,index) in artData" :data-id="item.id"
+			:key="index" @click="Router.navigateTo({route:{path:'/pages/healthDetail/healthDetail?id='+$event.currentTarget.dataset.id}})">
+				<view class="ll"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
+				<view class="rr">
+					<view class="tit avoidOverflow">{{item.title}}</view>
+					<view class="text fs12 color6 avoidOverflow2">{{item.description}}</view>
+					
+				</view>
+			</view>
+		</view>
 	</view>
 	
 </template>
@@ -107,7 +119,8 @@
 				mainData:[],
 				searchItem:{
 					thirdapp_id:2
-				}
+				},
+				artData:[]
 			}
 		},
 		
@@ -118,7 +131,7 @@
 				uni.setStorageSync('parent_no',scene)
 			};
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData','getShopData'], self);
+			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData','getShopData','getArtData'], self);
 		},
 		
 		onReachBottom() {
@@ -131,6 +144,41 @@
 		},
 		
 		methods: {
+			
+			getArtData(isNew) {
+				const self = this;
+				console.log(2323)
+				if (isNew) {
+					self.mainData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 5
+					}
+				};
+				const postData = {};
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = self.$Utils.cloneForm(self.searchItem);
+				postData.getBefore = {
+					article:{
+						tableName:'Label',
+						middleKey:'menu_id',
+						key:'id',
+						searchItem:{
+							title: ['in', ['健康知识']],
+						},
+						condition:'in'
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.artData.push.apply(self.artData,res.info.data)
+					}
+					self.$Utils.finishFunc('getArtData');
+				};
+				self.$apis.articleGet(postData, callback);
+			},
 			
 			getShopData() {
 				const self = this;
@@ -151,9 +199,7 @@
 				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
-				/* postData.searchItem = {
-					user_no:uni.getStorageSync('user_info').user_no
-				}; */
+				/* ss */
 				const callback = (res) => {
 					if (res.info.data.length > 0) {
 						self.userInfoData = res.info.data[0];
@@ -228,4 +274,10 @@
 	.indHome{ flex-wrap:wrap;}
 	.indHome .item{width: 20%;text-align: center;padding-bottom: 15px; font-size: 26rpx; color: #222;display: flex; flex-direction: column;}
 	.indHome .item image{width:90rpx;height:90rpx; margin: 0 auto 20rpx auto; }
+	
+	.healthList .item{padding: 30rpx 0;align-items: flex-start;border-bottom: 1px solid #eee;}
+	.healthList .ll{width: 260rpx;height: 200rpx;overflow: hidden;border-radius: 10rpx;}
+	.healthList .ll image{width: 100%;height: 100%; display: block;}
+	.healthList .rr{width: 60%;height: 200rpx;padding: 10rpx 0;box-sizing: border-box;position: relative;}
+	.healthList .rr .text{line-height: 36rpx;margin-top: 20rpx;}
 </style>

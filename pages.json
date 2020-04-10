@@ -24,7 +24,7 @@
 		{
 			"path": "pages/liLiao/liLiao",
 			"style": {
-				"navigationBarTitleText": "理疗",
+				"navigationBarTitleText": "",
 				"onReachBottomDistance":100
 			}
 		},
@@ -35,13 +35,7 @@
 				"onReachBottomDistance":100
 			}
 		},
-		{
-			"path": "pages/productDetail/productDetail",
-			"style": {
-				"navigationBarTitleText": "商品详情",
-				"onReachBottomDistance":100
-			}
-		},
+		
 		{
 			"path": "pages/evaluate/evaluate",
 			"style": {
@@ -230,14 +224,8 @@
 				"navigationBarTitleText": "扫描结果",
 				"onReachBottomDistance":100
 			}
-		},
-		{
-			"path": "pages/scanResult/scanResult",
-			"style": {
-				"navigationBarTitleText": "扫描结果",
-				"onReachBottomDistance":100
-			}
 		}
+		
     ],
 	"globalStyle": {
 		//"navigationStyle":"custom",

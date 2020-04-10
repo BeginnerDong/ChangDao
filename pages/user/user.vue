@@ -72,7 +72,7 @@
 				<view class="nav_img">
 					<image src="../../static/images/nabar2.png" />
 				</view>
-				<view class="text">理疗</view>
+				<view class="text">{{sliderData.url&&sliderData.url!='1'?'理疗':'菜单'}}</view>
 			</view>
 			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})" >
 				<view class="nav_img">
@@ -99,12 +99,13 @@
 				Router:this.$Router,
 				showView: false,
 				score:'',
-				wx_info:{}
+				wx_info:{},
+				sliderData:{}
 			}
 		},
 		onLoad() {
 			const self = this;
-			//self.$Utils.loadAll(['getUserInfoData'], self);
+			self.$Utils.loadAll(['getSliderData'], self);
 		},
 		
 		onShow() {
@@ -113,6 +114,21 @@
 		},
 		
 		methods: {
+			
+			getSliderData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					title:'首页轮播',
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.sliderData = res.info.data[0]
+					}
+					self.$Utils.finishFunc('getSliderData');
+				};
+				self.$apis.labelGet(postData, callback);
+			},
 
 			getUserInfoData() {
 				const self = this;

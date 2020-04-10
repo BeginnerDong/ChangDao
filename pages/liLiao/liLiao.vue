@@ -42,7 +42,7 @@
 				<view class="nav_img">
 					<image src="../../static/images/nabar2-a.png" />
 				</view>
-				<view class="text this-text">理疗</view>
+				<view class="text this-text">{{sliderData.url&&sliderData.url!='1'?'理疗':'菜单'}}</view>
 			</view>
 			<view class="navbar_item" @click="Router.redirectTo({route:{path:'/pages/product/product'}})" >
 				<view class="nav_img">
@@ -75,17 +75,42 @@
 				currId:-1,
 				order:{
 					listorder:'desc'
-				}
+				},
+				sliderData:{}
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getTypeData'], self);
+			self.$Utils.loadAll(['getTypeData','getSliderData'], self);
 		},
 		
 		methods: {
+			
+			getSliderData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					title:'首页轮播',
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.sliderData = res.info.data[0]
+						if(self.sliderData.url=='1'){
+							uni.setNavigationBarTitle({
+							    title: '菜单'
+							});
+						}else{
+							uni.setNavigationBarTitle({
+							    title: '理疗'
+							});
+						}
+					}
+					self.$Utils.finishFunc('getSliderData');
+				};
+				self.$apis.labelGet(postData, callback);
+			},
 			
 			changeCurr(id){
 				const self = this;
