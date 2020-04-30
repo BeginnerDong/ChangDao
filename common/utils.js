@@ -168,7 +168,8 @@ export default {
 	},
 
 	inArray(value, array) {
-
+		console.log('v',value)
+		console.log('a',array)
 		return array.indexOf(value);
 	},
 

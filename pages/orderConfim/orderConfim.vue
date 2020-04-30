@@ -120,7 +120,8 @@
 				totalPrice:0,
 				pay:{},
 				isMember:false,
-				ratio:0
+				ratio:0,
+				realMoney:0
 			}
 		},
 		
@@ -134,7 +135,8 @@
 			
 			message(){
 				const self = this;
-				wx.requestSubscribeMessage({
+				 self.goPay()
+				/* wx.requestSubscribeMessage({
 				  tmplIds: ['0hcW79pWe-rRGN0tb5ov_TiqreKFyTR2ZosT030_sYY','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
 				  success (res) { 
 					  console.log(res)
@@ -142,7 +144,7 @@
 						  self.goPay()
 					  }
 				  }
-				})
+				}) */
 			},
 			
 			getDistriData() {
@@ -232,8 +234,9 @@
 					self.pay.score = {
 						price: money.toFixed(2),
 					};
+					self.realMoney = self.pay.score.price;
 				} else {
-					  delete self.pay.score;	 
+					  delete self.pay.score;	
 				};
 				if(self.isMember){
 					self.pay.other = {
@@ -241,6 +244,7 @@
 					}
 				}
 				console.log(self.pay)
+				
 			},
 			
 			submit(){
@@ -260,7 +264,7 @@
 					var data = {
 						passage1:self.passage1,
 						passage2:self.passage2,
-						
+						pay_price:self.realMoney
 					}
 					var orderList = [
 						{product_id:self.mainData[0].product_id,count:1,type:1,data:data}
@@ -438,6 +442,7 @@
 							self.pay.score = {
 								price: parseFloat(self.totalPrice).toFixed(2),
 							};
+							self.realMoney = self.pay.score.price;
 						} else {
 							  delete self.pay.score;	 
 						};
@@ -447,6 +452,7 @@
 							self.pay.wxPay = {
 								price: parseFloat(self.totalPrice).toFixed(2),
 							};
+							self.realMoney = self.pay.wxPay.price;
 						} else {
 							  delete self.pay.wxPay;	 
 						};

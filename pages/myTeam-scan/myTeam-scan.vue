@@ -82,7 +82,7 @@
 						tableName: 'FlowLog',
 						FuncName: 'add',
 						data: {
-							count:(parseFloat(self.mainData.price)*ratio).toFixed(2),
+							count:(parseFloat(self.mainData.pay_price)*ratio).toFixed(2),
 							thirdapp_id:2,
 							status:1,
 							trade_info:'服务佣金',
