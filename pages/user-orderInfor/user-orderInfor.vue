@@ -45,7 +45,7 @@
 							<view class="infor">
 								<view class="avoidOverflow2 fs13">{{item.title}}</view>
 								<view class="B-price flexRowBetween">
-									<view class="price">{{item.price}}</view>
+									<view class="price">{{item.pay_price}}</view>
 									<view class="fs13">×1</view>
 								</view>
 							</view>

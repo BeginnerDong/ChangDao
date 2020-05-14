@@ -14,8 +14,8 @@
 		<view class="myRowBetween myRowBetweenL70  mglr4">
 			<view class="item flexRowBetween" v-for="(item,index) in mainData" :key="index">
 				<view class="ll flex" style="width: 50%;">
-					<view class="photo"><image :src="item.user&&item.user.headImgUrl?item.user.headImgUrl:''" mode=""></image></view>
-					<view class="fs13 ll-tit">{{item.user&&item.user.nickname?item.user.nickname:''}}</view>
+					<view class="photo"><image :src="item.user&&item.user.mainImg&&item.user.mainImg[0]?item.user.mainImg[0].url:''" mode=""></image></view>
+					<view class="fs13 ll-tit">{{item.user&&item.user.name?item.user.name:''}}</view>
 				</view>
 				<view class="rr color9" style="width: 50%;">{{item.create_time}}</view>
 			</view>
@@ -47,7 +47,7 @@
 		onLoad(options) {
 			const self = this;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getMainData'], self);
+			self.$Utils.loadAll(['getMainData','getQrData'], self);
 		},
 		
 		onReachBottom() {
@@ -98,20 +98,20 @@
 				const postData = {};
 				postData.paginate = self.$Utils.cloneForm(self.paginate);
 				postData.searchItem = {
-					type:1,
+					type:2,
 					parent_no:uni.getStorageSync('staffInfo').user_no
 				};
 				postData.tokenFuncName = 'getStaffToken';
 				postData.getAfter = {
 					user:{
-						tableName:'User',
+						tableName:'UserInfo',
 						middleKey:'child_no',
 						key:'user_no',
 						condition:'=',
 						searchItem:{
 							status:1
 						},
-						info:['headImgUrl','nickname']
+						info:['name','mainImg']
 					}
 				};
 				const callback = (res) => {

@@ -180,6 +180,6 @@
 	page{background: #F5F5F5;}
 	.servicer{padding: 30rpx 4%;}
 	.servicer .cont{max-height: 400rpx;overflow-y: auto;}
-	.servicer .lis{margin-top: 30rpx;}
+	.servicer .lis{margin-top: 30rpx;font-size:16px;font-weight: 700;}
 	.servicer .lis .seltIcon{width: 30rpx;height: 30rpx;margin-right: 20rpx;}
 </style>

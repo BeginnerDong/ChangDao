@@ -80,13 +80,13 @@
 					</view>
 					<view><image class="seltIcon" :src="payCurr==1?'../../static/images/the-order-icon.png':'../../static/images/the-order-icon1.png'" mode=""></image></view>
 				</view>
-				<view class="item flexRowBetween" @click="changePay('2')">
+				<!-- <view class="item flexRowBetween" @click="changePay('2')">
 					<view class="flex">
 						<image class="icon" src="../../static/images/the-order-icon4.png" mode=""></image>
 						<view>微信支付</view>
 					</view>
 					<view><image class="seltIcon" :src="payCurr==2?'../../static/images/the-order-icon.png':'../../static/images/the-order-icon1.png'" mode=""></image></view>
-				</view>
+				</view> -->
 			</view>
 			<view class="submitbtn" style="margin-top:80rpx ;">
 				<button class="btn" type="submint"   @click="Utils.stopMultiClick(message)">立即支付</button>
@@ -135,16 +135,20 @@
 			
 			message(){
 				const self = this;
-				 self.goPay()
-				/* wx.requestSubscribeMessage({
+				 //self.goPay()
+				wx.requestSubscribeMessage({
 				  tmplIds: ['0hcW79pWe-rRGN0tb5ov_TiqreKFyTR2ZosT030_sYY','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
 				  success (res) { 
 					  console.log(res)
 					  if(res){
 						  self.goPay()
 					  }
+				  },
+				  fail(err) {    //失败
+				  					
+				  	self.goPay()
 				  }
-				}) */
+				})
 			},
 			
 			getDistriData() {
