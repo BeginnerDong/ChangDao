@@ -59,7 +59,8 @@
 			</view>
 			<view class="pdt15 pdb20 fs12" style="line-height: 44rpx;">您现在还不是会员，建议您购买会员，享受服务和产品的优惠折扣，享受佣金以及返利收益</view>
 			<view class="submitbtn">
-				<view class="Wbtn" style="border-radius: 10rpx;" @click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">购买</view>
+				<view class="Wbtn" style="border-radius: 10rpx;" 
+				@click="Router.navigateTo({route:{path:'/pages/VipInfor/VipInfor'}})">购买</view>
 			</view>
 			<view class="mgt20">
 				<view class="center pdtb10 color6" @click="PayShow">暂不购买</view>
