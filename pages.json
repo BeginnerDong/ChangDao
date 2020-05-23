@@ -224,6 +224,20 @@
 				"navigationBarTitleText": "扫描结果",
 				"onReachBottomDistance":100
 			}
+		},
+		{
+			"path": "pages/user-myCoupon/user-myCoupon",
+			"style": {
+				"navigationBarTitleText": "电子券",
+				"onReachBottomDistance":100
+			}
+		},
+		{
+			"path": "pages/myTeam-scanCoupon/myTeam-scanCoupon",
+			"style": {
+				"navigationBarTitleText": "扫描结果",//扫描结果电子券信息
+				"onReachBottomDistance":100
+			}
 		}
 		
     ],

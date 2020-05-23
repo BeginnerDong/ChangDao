@@ -58,6 +58,13 @@
 				</view>
 				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
 			</view>
+			<view class="item flexRowBetween" @click="Router.navigateTo({route:{path:'/pages/user-myCoupon/user-myCoupon'}})" >
+				<view class="ll flex">
+					<image class="icon" src="../../static/images/team-icon6.png" mode=""></image>
+					<view class="">电子券</view>
+				</view>
+				<view class="rr"><image class="arrowR" src="../../static/images/the-order-icon2.png" mode=""></image></view>
+			</view>
 		</view>
 			
 		<!--底部tab键-->
