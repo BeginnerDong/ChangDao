@@ -11,7 +11,7 @@
 			</view>
 		</view>
 		
-		<view class="FxIcon"><image src="../../static/images/health-information-icon.png" mode=""></image></view>
+		<button open-type="share" class="FxIcon"><image src="../../static/images/health-information-icon.png" mode=""></image></button>
 	</view>
 	
 </template>
@@ -30,6 +30,44 @@
 			self.id = options.id;
 			self.$Utils.loadAll(['getMainData'], self);
 		},
+		
+		
+		onShareAppMessage(ops) {
+			console.log(ops)
+			const self = this;
+			if (ops.target.id === 'staffShare') {
+				
+				return {
+					title: '常道-'+self.mainData.title,
+					path: '/pages/healthDetail/healthDetail', //点击分享的图片进到哪一个页面
+					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+			}else{
+				return {
+					title: '常道-'+self.mainData.title,
+					path: '/pages/healthDetail/healthDetail', //点击分享的图片进到哪一个页面
+					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+				console.log(ops.target)
+			}
+		},
+		
 		methods: {
 			
 			getMainData() {
@@ -59,4 +97,10 @@
 	page{padding-bottom:60rpx;}
 	.FxIcon{position: fixed;top: 20%;right: 30rpx;}
 	.FxIcon image{width: 90rpx;height: 90rpx;display: block;}
+	button{
+		background: none;
+	}
+	button::after{
+		border: none;
+	}
 </style>

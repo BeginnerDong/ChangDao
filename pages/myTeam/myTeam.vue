@@ -74,10 +74,39 @@
 				const self = this;
 				uni.scanCode({
 				    success: function (res) {
-				        self.Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan?id='+res.result}})
+						self.getOrderData(res.result)
+				       // self.Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan?id='+res.result}})
 				        console.log('条码内容：' + res.result);
 				    }
 				});
+			},
+			
+			getOrderData(id) {
+				const self = this;
+				const postData = {
+					searchItem:{
+						id:id,
+					}
+				};
+				postData.tokenFuncName = 'getStaffToken'
+				//postData.searchItem.user_no = uni.getStorageSync('staffInfo').user_no		
+				const callback = (res) => {
+					if (res.solely_code == 100000 && res.info.data[0]) {
+						if(res.info.data[0].transport_status==0){
+							if(res.info.data[0].type==3){
+								self.Router.navigateTo({route:{path:'/pages/myTeam-scanCoupon/myTeam-scanCoupon?id='+res.info.data[0].id}})
+							}else{
+								self.Router.navigateTo({route:{path:'/pages/myTeam-scan/myTeam-scan?id='+res.info.data[0].id}})
+							}
+						}else if(res.info.data[0].transport_status==2){
+							self.$Utils.showToast('此码已核销', 'none');
+						}
+					} else {
+						self.$Utils.showToast(res.msg, 'none');
+					};
+					//self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.orderGet(postData, callback);
 			},
 			
 			

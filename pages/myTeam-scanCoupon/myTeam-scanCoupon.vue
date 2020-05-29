@@ -8,21 +8,21 @@
 					<view class="cont flexRowBetween">
 						<view class="icon"><image src="../../static/images/vouchersl-icon.png" mode=""></image></view>
 						<view class="title white">
-							<view class="fs16">艾灸+推拿+针灸</view>
-							<view class="fs12 mgt5">套餐</view>
+							<view class="fs16">{{mainData.title}}</view>
+							<view class="fs12 mgt5">电子券套餐</view>
 						</view>
 					</view>
 				</view>
 				<view class="B-infor flexRowBetween">
 					<view class="fs13 color6">使用时间：永久有效</view>
-					<view class="ewm" ><image src="../../static/images/my-order-img.png" mode=""></image></view>
+					<!-- <view class="ewm" ><image src="../../static/images/my-order-img.png" mode=""></image></view> -->
 				</view>
 			</view>
 		</view>
 		
 		
 		<view class="submitbtn" style="margin-top: 200rpx;">
-			<button class="btn" type="button" @click="Router.navigateTo({route:{path:'/pages//'}})">确认</button>
+			<button class="btn" type="button" @click="$Utils.stopMultiClick(orderUpdate)">确认核销</button>
 		</view>
 		
 		
@@ -46,15 +46,72 @@
 				num:1,
 				is_show:false,
 				couponData:2,
-				is_ewmShow:false
+				is_ewmShow:false,
+				mainData:{}
 			}
 		},
 		
-		onLoad() {
+		onLoad(options) {
 			const self = this;
+			self.id = options.id;
+			self.$Utils.loadAll(['getMainData'], self);
 		},
 		
 		methods: {
+			
+			orderUpdate() {
+				const self = this;
+				uni.setStorageSync('canClick', false);
+				const postData = {};
+				postData.tokenFuncName = 'getStaffToken';
+				postData.data = {
+					transport_status:2,
+				};
+				postData.searchItem = {
+					id:self.id,
+					user_type:0
+				};
+				const callback = (data) => {
+					uni.setStorageSync('canClick', true);
+					if (data && data.solely_code == 100000) {
+						self.$Utils.showToast('操作成功','none');
+						setTimeout(function() {
+							uni.navigateBack({
+								delta:1
+							})
+						}, 1000);
+					} else {
+						self.$Utils.showToast(data.msg,'none')
+					}
+				};
+				self.$apis.orderUpdate(postData, callback);
+			 },
+			
+			getMainData() {
+				const self = this;
+				const postData = {
+					searchItem:{
+						id:self.id,
+					}
+				};
+				postData.tokenFuncName = 'getStaffToken'
+				//postData.searchItem.user_no = uni.getStorageSync('staffInfo').user_no		
+				const callback = (res) => {
+					if (res.solely_code == 100000 && res.info.data[0]) {
+						self.mainData = res.info.data[0];
+					} else {
+						self.$Utils.showToast(res.msg, 'none');
+						setTimeout(function() {
+							uni.navigateBack({
+								delta:1
+							})
+						}, 1000);
+					};
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.orderGet(postData, callback);
+			},
+			
 			change(num){
 				const self = this;
 				if(num!= self.num){
@@ -62,6 +119,7 @@
 					
 				}
 			},
+			
 			ewmShow(){
 				const self = this;
 				self.is_show = !self.is_show;
