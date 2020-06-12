@@ -253,13 +253,11 @@
 				}
 				self.totalPrice = parseFloat(money).toFixed(2)
 				//console.log('wxPay',wxPay)
-				if (money > 0) {
-					self.pay.score = {
-						price: money.toFixed(2),
-					};
-				} else {
-					  delete self.pay.score;	 
+				
+				self.pay.score = {
+					price: money.toFixed(2),
 				};
+				
 				if(self.isMember){
 					self.pay.other = {
 						price:(parseFloat(normal_price) - parseFloat(member_price)).toFixed(2)
@@ -443,22 +441,18 @@
 					self.payCurr = payCurr;
 					if(self.payCurr==1){
 						delete self.pay.wxPay;
-						if (parseFloat(self.totalPrice) > 0) {
-							self.pay.score = {
-								price: parseFloat(self.totalPrice).toFixed(2),
-							};
-						} else {
-							  delete self.pay.score;	 
+						
+						self.pay.score = {
+							price: parseFloat(self.totalPrice).toFixed(2),
 						};
+						
 					}else if(self.payCurr==2){
 						delete self.pay.score;
-						if (parseFloat(self.totalPrice) > 0) {
-							self.pay.wxPay = {
-								price: parseFloat(self.totalPrice).toFixed(2),
-							};
-						} else {
-							  delete self.pay.wxPay;	 
+						
+						self.pay.wxPay = {
+							price: parseFloat(self.totalPrice).toFixed(2),
 						};
+						
 					}
 				}
 			}
