@@ -1,6 +1,15 @@
 <template>
 	<view>
-		<view><image style="width: 100%;height: 346rpx;display: block;" src="../../static/images/the-login-img.png" mode="widthFix"></image></view>
+		
+		<view class="mglr4 xqInfor" style="padding-bottom: 240rpx;">
+			<view class="center pdtb15 fs15">{{mainData.title}}</view>
+			<view class="cont fs13">
+				<view class="content ql-editor" style="padding:0;"
+				v-html="mainData.content">
+				</view>
+			</view>
+		</view>
+		<!-- <view><image style="width: 100%;height: 346rpx;display: block;" src="../../static/images/the-login-img.png" mode="widthFix"></image></view>
 		
 		<view>
 			<view class="loginEdit">
@@ -34,6 +43,14 @@
 			<view class="submitbtn" style="margin-top:20rpx;">
 				<button class="btn" type="button" @click="Router.reLaunch({route:{path:'/pages/index/index'}})">返回首页</button>
 			</view>
+		</view> -->
+		<view style="position: fixed;bottom: 20px;width: 100%;">
+			<button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" type="primary" style="color: #fff;border-radius: 0;width: 80%;margin-left:auto ;margin-right: auto;;font-size:15px">
+				微信用户快捷登录
+			</button>
+			<button @click="Router.reLaunch({route:{path:'/pages/index/index'}})" style="margin-top: 50rpx;border-radius: 0;width: 80%;margin-left:auto ;margin-right: auto;font-size:15px">
+				暂不登录
+			</button>
 		</view>
 		
 	</view>
@@ -56,15 +73,63 @@
 				currentTime:61,
 				text:'获取验证码',
 				hasSend:false,
+				mainData:{}
 			}
 		},
 		
 		onLoad(options) {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
 		
 		methods: {
+			
+			getMainData() {
+				const self = this;
+				console.log(2323)
+				const postData = {};
+				postData.searchItem = {
+					thirdapp_id:2
+				};
+				postData.getBefore = {
+					article:{
+						tableName:'Label',
+						middleKey:'menu_id',
+						key:'id',
+						searchItem:{
+							title: ['in', ['广告']],
+						},
+						condition:'in'
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.mainData = res.info.data[0]
+					}
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.articleGet(postData, callback);
+			},
+			
+			getPhoneNumber(e) {
+				const self = this;
+				console.log('e', e);
+				if (e.detail.errMsg == 'getPhoneNumber:fail user deny') {
+					return
+				};
+				const postData = {
+					appid: uni.getStorageSync('user_info').thirdApp.appid,
+					tokenFuncName: 'getProjectToken',
+					encryptedData: e.detail.encryptedData,
+					iv: e.detail.iv
+				};
+				const callback = (res) => {
+					if (res.solely_code == 100000) {
+						self.userInfoUpdate(res.info.phoneNumber)
+					};
+				}
+				self.$apis.decryptWxInfo(postData, callback)
+			},
 			
 			
 			sendCode(){
@@ -138,7 +203,7 @@
 				};
 			},
 			
-			userInfoUpdate() {
+			userInfoUpdate(phone) {
 				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
@@ -146,11 +211,7 @@
 					user_no:uni.getStorageSync('user_info').user_no
 				};
 				postData.data = {
-					phone:self.submitData.phone
-				};
-				postData.smsAuth = {
-					phone:self.submitData.phone,						
-					code:self.submitData.smsCode
+					phone:phone
 				};
 				postData.refreshToken = true;
 				if(uni.getStorageSync('parent_no')){
@@ -177,7 +238,6 @@
 								delta:1
 							})
 						}, 1000);
-						
 					} else {
 						uni.setStorageSync('canClick', true);
 						self.$Utils.showToast(data.msg, 'none', 1000)
@@ -191,6 +251,7 @@
 
 <style>
 @import "../../assets/style/orderNav.css";	
+@import "../../assets/style/detail.css";
 .orderNav .tt{width: 50%;}
 .orderNav .tt.on::after{ width: 200rpx;}
 

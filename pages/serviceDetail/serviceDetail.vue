@@ -13,6 +13,10 @@
 						<view>会员价</view>
 						<view class="mny">{{mainData.member_price?mainData.member_price:''}}</view>
 					</view>
+					<view class="flex VipPrice fs10">
+						<view>超级会员价</view>
+						<view class="mny">{{mainData.super_price?mainData.super_price:''}}</view>
+					</view>
 				</view>
 				<button class="fs12 color6 flexEnd" v-if="!staffShare" open-type="share" id="userShare">
 					<image class="shareIcon mgr5" src="../../static/images/details-icon.png" mode=""></image>分享

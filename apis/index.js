@@ -18,7 +18,17 @@ export default {
 		http.HTTP(allParams);
 	},
 	
-	
+	decryptWxInfo(param, callback) {
+		var allParams = {
+			url: 'Func/Common/decryptWxInfo',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
 	
 	
 
@@ -412,6 +422,19 @@ export default {
 
 		var allParams = {
 			url: 'Func/Common/loginByUp',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
+	
+	staffLogin(param, callback) {
+	
+		var allParams = {
+			url: 'Func/Common/loginBystaff',
 			type: 'post',
 			data: param,
 			sCallback: function(data) {

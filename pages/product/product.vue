@@ -8,9 +8,13 @@
 				<view class="infor">
 					<view class="tit avoidOverflow">{{item.title}}</view>
 					<view class="price fs16 ftw tit">{{item.price}}</view>
-					<view class="flex  fs10">
+					<view class="flex  fs10 tit">
 						<view>会员价</view>
 						<view class="mny">{{item.member_price}}</view>
+					</view>
+					<view class="flex  fs10">
+						<view>超级会员价</view>
+						<view class="mny">{{item.super_price}}</view>
 					</view>
 					
 				</view>

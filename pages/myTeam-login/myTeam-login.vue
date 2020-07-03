@@ -87,7 +87,7 @@
 							self.$Utils.showToast(res.msg,'none')
 						}
 					}
-					self.$apis.login(postData, callback);
+					self.$apis.staffLogin(postData, callback);
 				} else {
 					self.$Utils.showToast('请补全登录信息', 'none')
 				};

@@ -117,6 +117,7 @@
 		
 		onShow() {
 			const self = this;
+			uni.hideLoading();
 			self.getUserInfoData()
 		},
 		

@@ -210,8 +210,10 @@
 				const callback = (res) => {
 					if (res.solely_code == 100000 && res.info.data[0]) {
 						self.userInfoData = res.info.data[0];
-						if(self.userInfoData.level>0){
+						if(self.userInfoData.level>0&&self.userInfoData.level<5){
 							self.isMember = true
+						}else if(self.userInfoData.level==5){
+							self.isSuperMember = true
 						}
 					} else {
 						self.$Utils.showToast(res.msg, 'none')
@@ -242,12 +244,16 @@
 				self.totalPrice = 0;
 				var member_price = 0; 
 				var normal_price = 0; 
+				var super_price = 0; 
 				for (var i = 0; i < self.mainData.length; i++) {
 					member_price += self.mainData[i].product.member_price*self.mainData[i].count;
-					normal_price += self.mainData[i].product.price*self.mainData[i].count
+					normal_price += self.mainData[i].product.price*self.mainData[i].count;
+					super_price += self.mainData[i].product.super_price*self.mainData[i].count;
 				};
 				if(self.isMember){
 					var money = parseFloat(member_price);
+				}else if(self.isSuperMember){
+					var money = parseFloat(super_price);
 				}else{
 					var money = parseFloat(normal_price);
 				}
@@ -261,6 +267,10 @@
 				if(self.isMember){
 					self.pay.other = {
 						price:(parseFloat(normal_price) - parseFloat(member_price)).toFixed(2)
+					}
+				}else if(self.isSuperMember){
+					self.pay.other = {
+						price:(parseFloat(normal_price) - parseFloat(super_price)).toFixed(2)
 					}
 				}
 				console.log(self.pay)
@@ -311,6 +321,9 @@
 				postData.orderList = self.$Utils.cloneForm(orderList);
 				postData.data = {};
 				postData.tokenFuncName = 'getProjectToken';
+				if(!wx.getStorageSync('user_info')||wx.getStorageSync('user_info').headImgUrl==''||!wx.getStorageSync('user_info').headImgUrl){
+				  postData.refreshToken = true;
+				};
 				const callback = (res) => {
 					uni.setStorageSync('canClick', true);
 					if (res && res.solely_code == 100000) {

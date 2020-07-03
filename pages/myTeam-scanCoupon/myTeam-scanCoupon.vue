@@ -47,7 +47,8 @@
 				is_show:false,
 				couponData:2,
 				is_ewmShow:false,
-				mainData:{}
+				mainData:{},
+				ratio:0,
 			}
 		},
 		
@@ -71,6 +72,25 @@
 					id:self.id,
 					user_type:0
 				};
+				if(self.ratio>0){
+					postData.payAfter = [
+						{
+							tableName: 'FlowLog',
+							FuncName: 'add',
+							data: {
+								count:(parseFloat(self.mainData.price)*self.ratio).toFixed(2),
+								thirdapp_id:2,
+								status:1,
+								trade_info:'推广佣金',
+								type:2,
+								account:1,
+								behavior:2,
+								user_no:self.distriData.parent_no,
+								relation_user:self.mainData.user_no
+							},
+						},
+					];
+				}
 				const callback = (data) => {
 					uni.setStorageSync('canClick', true);
 					if (data && data.solely_code == 100000) {
@@ -99,6 +119,7 @@
 				const callback = (res) => {
 					if (res.solely_code == 100000 && res.info.data[0]) {
 						self.mainData = res.info.data[0];
+						self.getDistriData()
 					} else {
 						self.$Utils.showToast(res.msg, 'none');
 						setTimeout(function() {
@@ -110,6 +131,50 @@
 					self.$Utils.finishFunc('getMainData');
 				};
 				self.$apis.orderGet(postData, callback);
+			},
+			
+			getDistriData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					child_no:self.mainData.user_no
+				};
+				postData.tokenFuncName = 'getStaffToken';
+				postData.getAfter = {
+					user:{
+						tableName:'UserInfo',
+						middleKey:'parent_no',
+						key:'user_no',
+						condition:'=',
+						searchItem:{
+							status:1
+						},
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.distriData =  res.info.data[0]
+					};
+					if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==1){
+						self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.staff)/100;
+					}else if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==0){
+						if(self.distriData.user[0].level==0){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.user)/100;
+						}else if(self.distriData.user[0].level==1){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_one)/100;
+						}else if(self.distriData.user[0].level==2){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_two)/100;
+						}else if(self.distriData.user[0].level==3){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_three)/100;
+						}else if(self.distriData.user[0].level==4){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_four)/100;
+						}else if(self.distriData.user[0].level==5){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_super)/100;
+						}
+					};
+					console.log(self.ratio)
+				};
+				self.$apis.distriGet(postData, callback);
 			},
 			
 			change(num){
