@@ -4,10 +4,10 @@
 			<view class="flexCenter fs12">
 				<view class="fs22">{{mainData.length}}</view>个
 			</view>
-			<view class="ewmBtn flexEnd fs12" @click="ewmShow" style="background: #C09E63; color: #fff;">
+			<!-- <view class="ewmBtn flexEnd fs12" @click="ewmShow" style="background: #C09E63; color: #fff;">
 				<image class="icon" src="../../static/images/promote-icon3.png" mode=""></image>
 				推广二维码
-			</view>
+			</view> -->
 		</view>
 		<view class="f5H5"></view>
 		

@@ -18,7 +18,7 @@
 				<view class="item" v-for="(item,index) in mainData" @click="clickSearch(item.word)" :key="index">{{item.word}}</view>
 			</view>
 			<view class="fs15 pdt20 pdb10 ftw">搜索记录</view>
-			<view class="historyDate  center fs13 flex fs12">
+			<view class="historyDate  center fs13 flex fs12" style="flex-wrap: wrap;">
 				<view class="item" v-for="(item,index) in historyDate" @click="clickSearch(item)"  :key="index">{{item}}</view>
 			</view>
 		</view>
@@ -136,7 +136,8 @@
 
 <style>
 	/* @import "../../assets/style/seach.css"; */
-	
+	@import "../../assets/style/product.css";
+	@import "../../assets/style/VipPrice.css";
 	page{padding-bottom: 110rpx;}
 	
 	.seachbox{padding: 30rpx 4% 20rpx 4%;box-sizing: border-box;}

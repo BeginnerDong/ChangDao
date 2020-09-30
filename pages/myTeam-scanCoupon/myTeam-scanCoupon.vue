@@ -63,6 +63,7 @@
 			orderUpdate() {
 				const self = this;
 				uni.setStorageSync('canClick', false);
+				var ratio = parseFloat(uni.getStorageSync('staffInfo').thirdApp.custom_rule.service)/100;
 				const postData = {};
 				postData.tokenFuncName = 'getStaffToken';
 				postData.data = {
@@ -72,8 +73,27 @@
 					id:self.id,
 					user_type:0
 				};
+				postData.payAfter = [
+					{
+						tableName: 'FlowLog',
+						FuncName: 'add',
+						data: {
+							count:(parseFloat(self.mainData.price)*ratio).toFixed(2),
+							thirdapp_id:2,
+							status:1,
+							trade_info:'服务佣金',
+							type:2,
+							account:1,
+							behavior:1,
+							order_no:self.mainData.order_no,
+							user_no:uni.getStorageSync('staffInfo').user_no,
+							relation_user:self.mainData.user_no
+						},
+					},
+					
+				];
 				if(self.ratio>0){
-					postData.payAfter = [
+					postData.payAfter.push(
 						{
 							tableName: 'FlowLog',
 							FuncName: 'add',
@@ -89,8 +109,8 @@
 								relation_user:self.mainData.user_no
 							},
 						},
-					];
-				}
+					)
+				};
 				const callback = (data) => {
 					uni.setStorageSync('canClick', true);
 					if (data && data.solely_code == 100000) {

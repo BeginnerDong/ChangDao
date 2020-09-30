@@ -36,7 +36,7 @@
 				<view class="submitbtn" style="margin-top: 100rpx;">
 					<button class="btn" type="button" @click="Utils.stopMultiClick(submit)">提现</button>
 				</view>
-				<view class="color9 fs12" style="margin:10rpx 10% 30rpx 10%;">提现金额大于300元要扣除税金</view>
+				<view class="color9 fs12" style="margin:10rpx 10% 30rpx 10%;">提现以整数为准，如100，200，300，个人税按当地政策收取</view>
 				
 			</view>
 		</view>
@@ -166,7 +166,7 @@
 				};
 				if(self.isStaff){
 					postData.tokenFuncName = 'getStaffToken';
-					postData.searchItem.user_no = uni.getStorageSync('staffToken').user_no
+					postData.searchItem.user_no = uni.getStorageSync('staffInfo').user_no
 				}else{
 					postData.tokenFuncName = 'getProjectToken';
 					postData.searchItem.user_no = uni.getStorageSync('user_info').user_no

@@ -21,7 +21,7 @@
 			
 			<view class="pdlr4 pdt15 pdb15 flexRowBetween whiteBj">
 				<view>时间</view>
-				<view class="fs13 color6">{{mainData.passage1}}</view>
+				<view class="fs13 color6">{{mainData.passage1!=''?mainData.passage1:''}}</view>
 			</view>
 			
 			<view class="whiteBj servicer mgt15">

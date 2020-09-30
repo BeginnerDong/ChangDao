@@ -119,7 +119,9 @@
 					"../../static/images/home-banner.png"
 				],
 				productData:[{},{},{},{},{},{}],
-				sliderData:{},
+				sliderData:{
+					url:1
+				},
 				mainData:[],
 				searchItem:{
 					thirdapp_id:2
@@ -224,6 +226,7 @@
 					if (res.info.data.length > 0) {
 						self.sliderData = res.info.data[0]
 					}
+					console.log('self.sliderData',self.sliderData)
 					self.$Utils.finishFunc('getSliderData');
 				};
 				self.$apis.labelGet(postData, callback);

@@ -53,6 +53,15 @@
 			</button>
 		</view>
 		
+		<view class="bg-mask z1000 line-h" v-show="is_show1">
+			<view class="p-aX bottom-0 radius20-T bg-white font-30 pt-3 flex5">
+				<view class="text-center" style="font-weight: 700;font-size:18px">提示</view>
+				<view class="text-center" style="padding:50rpx 0;">请同意授权使用小程序</view>
+				<button class="flex0 bg-white py-2 bT-f5" open-type="getUserInfo" @getuserinfo="Utils.stopMultiClick(submit)">
+					<view class="grayBtn linearBtn" style="color: #fff;">确定</view>
+				</button>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -73,7 +82,8 @@
 				currentTime:61,
 				text:'获取验证码',
 				hasSend:false,
-				mainData:{}
+				mainData:{},
+				is_show1:false
 			}
 		},
 		
@@ -125,7 +135,9 @@
 				};
 				const callback = (res) => {
 					if (res.solely_code == 100000) {
-						self.userInfoUpdate(res.info.phoneNumber)
+						self.phone = res.info.phoneNumber
+						self.is_show1 = true;
+						/* self.userInfoUpdate(res.info.phoneNumber) */
 					};
 				}
 				self.$apis.decryptWxInfo(postData, callback)
@@ -177,7 +189,7 @@
 				self.$apis.codeGet(postData, callback);
 			},
 			
-			submit() {
+			/* submit() {
 				const self = this;
 				
 				uni.setStorageSync('canClick', false);
@@ -201,9 +213,19 @@
 					uni.setStorageSync('canClick', true);
 					self.$Utils.showToast('请补全信息', 'none')
 				};
+			}, */
+			
+			submit() {
+				const self = this;
+				uni.setStorageSync('canClick', false);	
+				const callback = (user, res) => {
+					console.log(res)
+					self.userInfoUpdate(user);
+				};
+				self.$Utils.getAuthSetting(callback);
 			},
 			
-			userInfoUpdate(phone) {
+			userInfoUpdate() {
 				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
@@ -211,7 +233,7 @@
 					user_no:uni.getStorageSync('user_info').user_no
 				};
 				postData.data = {
-					phone:phone
+					phone:self.phone
 				};
 				postData.refreshToken = true;
 				if(uni.getStorageSync('parent_no')){
@@ -249,9 +271,10 @@
 	};
 </script>
 
-<style>
+<style scoped>
 @import "../../assets/style/orderNav.css";	
 @import "../../assets/style/detail.css";
+button{border: 0;padding: 0;margin: 0;}
 .orderNav .tt{width: 50%;}
 .orderNav .tt.on::after{ width: 200rpx;}
 
@@ -262,5 +285,21 @@
 .loginEdit .item .rr{width: 82%;font-size: 26rpx;padding:16rpx 20rpx;border-bottom: 1px solid #eee;box-sizing: border-box;}
 .loginEdit .item .rr input{width: 100%;height: 40rpx;line-height: 40rpx; display: block;font-size: 24rpx;}
 .loginEdit .item .rr .placeholder{font-size: 26rpx;}
+.bg-mask {background: rgba(0,0,0,0.5);position: fixed;left: 0;top: 0;right: 0;bottom: 0;z-index: 100; }
+.z1000{z-index: 1000;}
+.line-h{ line-height: 1; }
+.p-aX{position: absolute;right: 0;left: 0;}
+.bottom-0{ bottom: 0; }
+.radius20-T{border-top-left-radius: 20rpx;border-top-right-radius: 20rpx;}
+.bg-white{ background-color:#fff }
+.font-30{font-size: 30rpx;}
+.pt-3 { padding-top: 30rpx;}
+.flex5{display: flex;flex-direction: column;justify-content: space-between;}
+.text-center{ text-align: center; }
+.flex0{display: flex;justify-content: center;align-items: center;flex-wrap: wrap;} 
+.py-2 { padding-top: 20rpx;padding-bottom: 20rpx;}
+.bT-f5{border-top: 1px solid #f5f5f5;}
+.grayBtn{background-color: #c09e63;color: #666;line-height: 80rpx;border-radius: 40rpx;text-align: center;font-size: 30rpx;width: 260rpx;}
+
 </style>
 

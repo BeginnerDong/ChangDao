@@ -10,10 +10,10 @@
 				<view class="fs15 ftw">{{userInfoData.service?userInfoData.service.count:''}}</view>
 				<view class="color6">服务佣金</view>
 			</view>
-			<view class="child flexColumn">
+			<!-- <view class="child flexColumn">
 				<view class="fs15 ftw">{{userInfoData.spread?userInfoData.spread.count:''}}</view>
 				<view class="color6">推广佣金</view>
-			</view>
+			</view> -->
 			<view class="child flexColumn">
 				<view class="fs15 ftw">{{userInfoData.team?userInfoData.team.count:''}}</view>
 				<view class="color6">团队佣金</view>
@@ -22,7 +22,7 @@
 		
 		<view class="orderNav flexRowBetween borderB1 color6">
 			<view class="tt" :class="num==1?'on':''" @click="change('1')">服务佣金</view>
-			<view class="tt" :class="num==2?'on':''" @click="change('2')">推广佣金</view>
+			<!-- <view class="tt" :class="num==2?'on':''" @click="change('2')">推广佣金</view> -->
 			<view class="tt" :class="num==3?'on':''" @click="change('3')">团队佣金</view>
 		</view>
 		

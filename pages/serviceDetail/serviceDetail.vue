@@ -116,7 +116,12 @@
 				mainData:{},
 				messageData:[],
 				isShare:false,
-				staffShare:false
+				staffShare:false,
+				pay:{},
+				isMember:false,
+				ratio:0,
+				realMoney:0,
+				isSuperMember:false
 			}
 		},
 		
@@ -131,7 +136,7 @@
 				uni.setStorageSync('parent_no',options.user_no)
 			};
 			console.log('options',options)
-			self.$Utils.loadAll(['getMainData','getProductData','getMessageData'], self);
+			self.$Utils.loadAll(['getMainData','getProductData','getMessageData','getDistriData'], self);
 		},
 		
 		onShow() {
@@ -179,6 +184,69 @@
 		
 		methods: {
 			
+			message(){
+				const self = this;
+				 //self.goPay()
+				wx.requestSubscribeMessage({
+				  tmplIds: ['0hcW79pWe-rRGN0tb5ov_TiqreKFyTR2ZosT030_sYY','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
+				  success (res) { 
+					  console.log(res)
+					  if(res){
+						  self.goPay()
+					  }
+				  },
+				  fail(err) {    //失败
+				  					
+				  	self.goPay()
+				  }
+				})
+			},
+			
+			getDistriData() {
+				const self = this;
+				const postData = {};
+				postData.searchItem = {
+					child_no:uni.getStorageSync('user_info').user_no
+				};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.getAfter = {
+					user:{
+						tableName:'UserInfo',
+						middleKey:'parent_no',
+						key:'user_no',
+						condition:'=',
+						searchItem:{
+							status:1
+						},
+					}
+				};
+				const callback = (res) => {
+					if (res.info.data.length > 0) {
+						self.distriData =  res.info.data[0]
+					};
+					if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==1){
+						self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.staff)/100;
+					}else if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==0){
+						if(self.distriData.user[0].level==0){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.user)/100;
+						}else if(self.distriData.user[0].level==1){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_one)/100;
+						}else if(self.distriData.user[0].level==2){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_two)/100;
+						}else if(self.distriData.user[0].level==3){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_three)/100;
+						}else if(self.distriData.user[0].level==4){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_four)/100;
+						}else if(self.distriData.user[0].level==5){
+							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.member_super)/100;
+						}
+					};
+					console.log(self.ratio)
+					self.$Utils.finishFunc('getDistriData');
+				};
+				self.$apis.distriGet(postData, callback);
+			},
+			
 			getUserInfoData() {
 				const self = this;
 				const postData = {};
@@ -194,11 +262,56 @@
 								self.Router.navigateTo({route:{path:'/pages/register/register'}})
 							}
 						}
+						if(self.userInfoData.level>0&&self.userInfoData.level<5){
+							self.isMember = true
+						}else if(self.userInfoData.level==5){
+							self.isSuperMember = true
+						}
+						self.countTotalPrice()
 					}
 					console.log('self.userInfoData', self.userInfoData)
 					//self.$Utils.finishFunc('getMainData');
 				};
 				self.$apis.userInfoGet(postData, callback);
+			},
+			
+			countTotalPrice() {
+				const self = this;
+				self.totalPrice = 0;
+				var member_price = 0; 
+				var normal_price = 0; 
+				var super_price = 0; 
+				
+					member_price += self.mainData.member_price;
+					normal_price += self.mainData.price;
+					super_price += self.mainData.super_price;
+				
+				if(self.isMember){
+					var money = parseFloat(member_price);
+				}else if(self.isSuperMember){
+					var money = parseFloat(super_price);
+				}else{
+					var money = parseFloat(normal_price);
+				}
+				self.totalPrice = parseFloat(money).toFixed(2)
+				//console.log('wxPay',wxPay)
+				
+				self.pay.score = {
+					price: money.toFixed(2),
+				};
+				self.realMoney = self.pay.score.price;
+				
+				if(self.isMember){
+					self.pay.other = {
+						price:(parseFloat(normal_price) - parseFloat(member_price)).toFixed(2)
+					}
+				}else if(self.isSuperMember){
+					self.pay.other = {
+						price:(parseFloat(normal_price) - parseFloat(super_price)).toFixed(2)
+					}
+				}
+				console.log(self.pay)
+				
 			},
 			
 			phoneCall(){
@@ -226,18 +339,144 @@
 					uni.setStorageSync('canClick',true);
 					return
 				};
-				
+				var data = {
+					pay_price:self.realMoney
+				};
+				self.orderList = [];
 				self.orderList.push(
 					{product_id:self.mainData.id,count:1,
-					type:1,product:self.mainData},
+					type:1,product:self.mainData,data:data},
 				);
 				uni.setStorageSync('payPro', self.orderList);
 				if(self.mainData.type==1){
-					self.Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})
+					wx.requestSubscribeMessage({
+					  tmplIds: ['0hcW79pWe-rRGN0tb5ov_TiqreKFyTR2ZosT030_sYY','Gs4a4LMFYrcMQGPfimitXa6JoGEKoPe28O_Fs2UfMuQ'],
+					  success (res) { 
+						  console.log(res)
+						  if(res){
+							  self.addOrder()
+						  }
+					  },
+					  fail(err) {    //失败
+					  					
+					  	self.addOrder()
+					  }
+					})
+					//self.Router.navigateTo({route:{path:'/pages/orderConfim/orderConfim'}})
 				}else if(self.mainData.type==2){
 					self.Router.navigateTo({route:{path:'/pages/product-orderConfim/product-orderConfim'}})
 				}
 				uni.setStorageSync('canClick',true);
+			},
+			
+			addOrder(orderList) {
+				const self = this;	
+				/* if(self.orderId){
+					self.goPay()
+					return
+				}; */
+				const postData = {}; 
+				postData.orderList = self.$Utils.cloneForm(self.orderList);
+				postData.data = {};
+				postData.tokenFuncName = 'getProjectToken';
+				if(!wx.getStorageSync('user_info')||wx.getStorageSync('user_info').headImgUrl==''||!wx.getStorageSync('user_info').headImgUrl){
+				  postData.refreshToken = true;
+				};
+				const callback = (res) => {
+					uni.setStorageSync('canClick', true);
+					if (res && res.solely_code == 100000) {
+						
+						self.orderId = res.info.id;
+						self.goPay()
+						
+					} else {		
+						
+						uni.showToast({
+							title: res.msg,
+							duration: 2000
+						});
+					};		
+				};
+				self.$apis.addOrder(postData, callback);
+			},
+			
+			goPay(order_id) {
+				const self = this;	
+				uni.setStorageSync('canClick',false);
+				
+				const postData = self.$Utils.cloneForm(self.pay)	
+				postData.tokenFuncName = 'getProjectToken',
+				postData.searchItem = {
+					id: self.orderId
+				};	
+				if(self.ratio>0){
+					postData.payAfter = [
+						{
+							tableName: 'FlowLog',
+							FuncName: 'add',
+							data: {
+								count:(parseFloat(self.totalPrice)*self.ratio).toFixed(2),
+								thirdapp_id:2,
+								status:1,
+								trade_info:'推广佣金',
+								type:2,
+								account:1,
+								behavior:2,
+								user_no:self.distriData.parent_no,
+								relation_user:uni.getStorageSync('user_info').user_no
+							},
+						},
+					];
+				}
+				
+				const callback = (res) => {
+					if (res.solely_code == 100000) {
+						uni.setStorageSync('canClick', true);
+						if (res.info) {
+							const payCallback = (payData) => {
+								console.log('payData', payData)
+								if (payData == 1) {
+									uni.showToast({
+										title: '支付成功',
+										duration: 1000,
+										success: function() {
+											
+										}
+									});
+									setTimeout(function() {
+										self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
+									}, 1000);
+								} else {
+									uni.setStorageSync('canClick', true);
+									uni.showToast({
+										title: '支付失败',
+										duration: 2000
+									});
+								};
+							};
+							self.$Utils.realPay(res.info, payCallback);
+						} else {
+							
+							uni.showToast({
+								title: '支付成功',
+								duration: 1000,
+								success: function() {
+									
+								}
+							});
+							setTimeout(function() {
+								self.$Router.redirectTo({route:{path:'/pages/user-orderInfor/user-orderInfor'}})
+							}, 1000);
+						};
+					} else {
+						uni.setStorageSync('canClick', true);
+						uni.showToast({
+							title: '余额不足',
+							duration: 2000
+						});
+					};
+				};
+				self.$apis.pay(postData, callback);
 			},
 			
 			change(curr) {

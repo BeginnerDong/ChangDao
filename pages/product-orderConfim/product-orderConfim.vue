@@ -329,9 +329,9 @@
 					if (res && res.solely_code == 100000) {
 						
 						self.orderId = res.info.id;
-						//self.goPay()
-						self.is_show = true
-						self.is_payVipShow = !self.is_payVipShow;
+						self.goPay()
+						/* self.is_show = true
+						self.is_payVipShow = !self.is_payVipShow; */
 					
 						/* self.is_show = !self.is_show;
 						self.is_PayShow = !self.is_PayShow; */

@@ -17,18 +17,15 @@
 				<view class="pic"><image :src="item.mainImg&&item.mainImg[0]?item.mainImg[0].url:''" mode=""></image></view>
 				<view class="infor">
 					<view class="tit avoidOverflow">{{item.title}}</view>
-					<view class="flex">
-						<view class="price fs16 ftw">{{item.price}}</view>
-						<view class="flex  fs10 tit">
-							<view>会员价</view>
-							<view class="mny">{{item.member_price}}</view>
-						</view>
-						<view class="flex  fs10">
-							<view>超级会员价</view>
-							<view class="mny">{{item.super_price}}</view>
-						</view>
+					<view class="price fs16 ftw tit">{{item.price}}</view>
+					<view class="flex  fs10 tit">
+						<view>会员价</view>
+						<view class="mny">{{item.member_price}}</view>
 					</view>
-					
+					<view class="flex  fs10">
+						<view>超级会员价</view>
+						<view class="mny">{{item.super_price}}</view>
+					</view>
 				</view>
 			</view>
 		</view>
