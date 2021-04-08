@@ -31,6 +31,14 @@
 			self.$Utils.loadAll(['getMainData'], self);
 		},
 		
+		onShareTimeline(){
+			const self = this;
+			return{
+				title: '常道-'+self.mainData.title,
+				query:'id='+self.id,
+				
+			}
+		},
 		
 		onShareAppMessage(ops) {
 			console.log(ops)
@@ -39,7 +47,7 @@
 				
 				return {
 					title: '常道-'+self.mainData.title,
-					path: '/pages/healthDetail/healthDetail', //点击分享的图片进到哪一个页面
+					path: '/pages/healthDetail/healthDetail?id='+self.id, //点击分享的图片进到哪一个页面
 					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
 					success: function(res) {
 						// 转发成功
@@ -53,7 +61,7 @@
 			}else{
 				return {
 					title: '常道-'+self.mainData.title,
-					path: '/pages/healthDetail/healthDetail', //点击分享的图片进到哪一个页面
+					path: '/pages/healthDetail/healthDetail?id='+self.id, //点击分享的图片进到哪一个页面
 					imageUrl:self.mainData&&self.mainData.mainImg&&self.mainData.mainImg[0]&&self.mainData.mainImg[0].url?self.mainData.mainImg[0].url:'',
 					success: function(res) {
 						// 转发成功

@@ -224,9 +224,9 @@
 					if (res.info.data.length > 0) {
 						self.distriData =  res.info.data[0]
 					};
-					if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==1){
+					if(self.distriData&&self.distriData.user&&self.distriData.user[0]&&self.distriData.user[0].user_type==1){
 						self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.staff)/100;
-					}else if(self.distriData&&self.distriData.user&&self.distriData.user[0].user_type==0){
+					}else if(self.distriData&&self.distriData.user&&self.distriData.user[0]&&self.distriData.user[0].user_type==0){
 						if(self.distriData.user[0].level==0){
 							self.ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.user)/100;
 						}else if(self.distriData.user[0].level==1){

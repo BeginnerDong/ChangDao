@@ -58,14 +58,19 @@
 		onLoad(options) {
 			const self = this;
 			self.id = options.id;
-			self.$Utils.loadAll(['getMainData','getStaffData'], self);
+			const callback = (res) => {
+				self.$Utils.loadAll(['getMainData','getStaffData'], self);
+			};
+			self.$Token.getProjectToken(callback, {
+				refreshToken: true,
+			})
 		},
 		
 		methods: {
 			
 			orderUpdate() {
 				const self = this;
-				var ratio = parseFloat(uni.getStorageSync('staffInfo').thirdApp.custom_rule.service)/100;
+				var ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.service)/100;
 				uni.setStorageSync('canClick', false);
 				const postData = {};
 				postData.tokenFuncName = 'getStaffToken';

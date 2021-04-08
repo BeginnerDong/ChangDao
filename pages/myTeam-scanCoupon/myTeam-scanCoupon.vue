@@ -14,7 +14,7 @@
 					</view>
 				</view>
 				<view class="B-infor flexRowBetween">
-					<view class="fs13 color6">使用时间：永久有效</view>
+					<view class="fs13 color6">有效期至：{{mainData.invalid_time?$Utils.timeto(mainData.invalid_time*1000,'ymd'):''}}</view>
 					<!-- <view class="ewm" ><image src="../../static/images/my-order-img.png" mode=""></image></view> -->
 				</view>
 			</view>
@@ -55,7 +55,13 @@
 		onLoad(options) {
 			const self = this;
 			self.id = options.id;
-			self.$Utils.loadAll(['getMainData'], self);
+			const callback = (res) => {
+				self.$Utils.loadAll(['getMainData'], self);
+			};
+			self.$Token.getProjectToken(callback, {
+				refreshToken: true,
+			})
+
 		},
 		
 		methods: {
@@ -63,7 +69,7 @@
 			orderUpdate() {
 				const self = this;
 				uni.setStorageSync('canClick', false);
-				var ratio = parseFloat(uni.getStorageSync('staffInfo').thirdApp.custom_rule.service)/100;
+				var ratio = parseFloat(uni.getStorageSync('user_info').thirdApp.custom_rule.service)/100;
 				const postData = {};
 				postData.tokenFuncName = 'getStaffToken';
 				postData.data = {
@@ -73,7 +79,7 @@
 					id:self.id,
 					user_type:0
 				};
-				postData.payAfter = [
+				postData.saveAfter = [
 					{
 						tableName: 'FlowLog',
 						FuncName: 'add',
@@ -93,7 +99,7 @@
 					
 				];
 				if(self.ratio>0){
-					postData.payAfter.push(
+					postData.saveAfter.push(
 						{
 							tableName: 'FlowLog',
 							FuncName: 'add',
@@ -111,6 +117,8 @@
 						},
 					)
 				};
+				console.log(postData)
+				//return
 				const callback = (data) => {
 					uni.setStorageSync('canClick', true);
 					if (data && data.solely_code == 100000) {

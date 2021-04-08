@@ -137,7 +137,7 @@
 				uni.setStorageSync('parent_no',scene)
 			};
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getSliderData','getMainData','getUserInfoData','getShopData','getArtData'], self);
+			self.$Utils.loadAll(['getSliderData','getMainData','tokenGet','getShopData','getArtData'], self);
 		},
 		
 		onReachBottom() {
@@ -149,7 +149,73 @@
 			};
 		},
 		
+		onShareAppMessage(ops) {
+			console.log(ops)
+			const self = this;
+			if (ops.target.id === 'staffShare') {
+				
+				return {
+					title: '常道',
+					
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+			}else{
+				return {
+					title: '常道',
+					
+					success: function(res) {
+						// 转发成功
+						console.log("转发成功:" + JSON.stringify(res));
+					},
+					fail: function(res) {
+						// 转发失败
+						console.log("转发失败:" + JSON.stringify(res));
+					}
+				}
+				console.log(ops.target)
+			}
+		},
+		
+		onShareTimeline(){
+			const self = this;
+			return{
+				title: '常道',
+			}
+		},
+		
 		methods: {
+			
+			tokenGet() {
+				const self = this;
+				const postData = {
+					searchItem: {
+						user_no: 'UA12340153639156'
+					}
+				};
+				console.log('postData', postData)
+				const callback = (res) => {
+					if (res.solely_code == 100000) {
+						self.userData = res.info;
+						uni.setStorageSync('user_token', res.token);
+						uni.setStorageSync('user_no', res.info.user_no);
+						uni.setStorageSync('user_info', res.info);
+						var time = parseInt(new Date().getTime()) + 3500000;
+						uni.setStorageSync('token_expire_time',time);
+						var param = self.$Utils.getHashParameters()[0];
+						
+					}
+					console.log('res', res)
+					self.$Utils.finishFunc('tokenGet');
+				};
+				self.$apis.tokenGet(postData, callback);
+			},
 			
 			getArtData(isNew) {
 				const self = this;
